@@ -1,0 +1,38 @@
+[
+  {
+    "class":"firrtl.transforms.CombinationalPath",
+    "sink":"~ChiselImProc|ChiselImProc>io_deq_last",
+    "sources":[
+      "~ChiselImProc|ChiselImProc>io_enq_last"
+    ]
+  },
+  {
+    "class":"firrtl.transforms.CombinationalPath",
+    "sink":"~ChiselImProc|ChiselImProc>io_deq_user",
+    "sources":[
+      "~ChiselImProc|ChiselImProc>io_enq_user"
+    ]
+  },
+  {
+    "class":"logger.LogLevelAnnotation",
+    "globalLogLevel":{
+      
+    }
+  },
+  {
+    "class":"firrtl.options.TargetDirAnnotation",
+    "directory":"test_run_dir/axi4.ImProcMain2111555233"
+  },
+  {
+    "class":"firrtl.options.OutputAnnotationFileAnnotation",
+    "file":"ChiselImProc"
+  },
+  {
+    "class":"firrtl.EmitCircuitAnnotation",
+    "emitter":"firrtl.VerilogEmitter"
+  },
+  {
+    "class":"firrtl.transforms.BlackBoxTargetDirAnno",
+    "targetDir":"test_run_dir/axi4.ImProcMain2111555233"
+  }
+]
