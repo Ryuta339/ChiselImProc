@@ -29,16 +29,19 @@ class MulAdd (data_width: Int, num: Int) extends Module {
     io.output := tmp    
 }
 
-
-// ImageFilter is a base class for each filter
-// Each filter extends this class.
-// The result of a filter should be written on io.deq.bits
-class ImageFilter (data_width: Int, width: Int, height: Int) extends Module {
+abstract class AbstractImageFilter (data_width: Int, width: Int, height: Int) extends Module {
     val io = IO (new FifoAXIStreamIO (UInt (data_width.W)))
 
     // default output
     io.deq.last := false.B
     io.deq.user := false.B
+}
+
+// ImageFilter is a base class for each filter
+// Each filter extends this class.
+// The result of a filter should be written on io.deq.bits
+class ImageFilter (data_width: Int, width: Int, height: Int) extends AbstractImageFilter(data_width,width, height) {
+
 
     // define states
     // block state is not used now
@@ -91,27 +94,25 @@ class ImageFilter (data_width: Int, width: Int, height: Int) extends Module {
     }
     
 
-    /*
     io.deq.last := lastReg
     io.deq.user := userReg
-    */
 
     io.enq.ready := (stateReg === empty || stateReg === one || stateReg === block)
     io.deq.valid := (stateReg === one || stateReg === two)
 
     io.state_reg := stateReg
-    /*
     io.shadow_reg := shadowReg
     io.shadow_user := shadowUserReg
     io.shadow_last := shadowLastReg
-    */
+    /*
     io.shadow_reg := dataReg
     io.shadow_user := userReg
     io.shadow_last := lastReg
+    */
 
     // io.enq <> io.deq
-    io.deq.last := io.enq.last
-    io.deq.user := io.enq.user
+    // io.deq.last := io.enq.last
+    // io.deq.user := io.enq.user
     // io.deq.bits := io.enq.bits
     io.deq.bits := dataReg
 }
@@ -191,6 +192,22 @@ class SobelFilter (data_width: Int, width: Int, height: Int) extends Module with
         val enq = AXIStreamSlaveIF (UInt(data_width.W))
         val deq = AXIStreamMasterIF (new GradPix)
     })
+}
+
+class NonMaxSupression (data_width: Int, width: Int, height: Int) extends Module with GradDirDefinition {
+    val io = IO (new Bundle {
+        val enq = AXIStreamSlaveIF (new GradPix)
+        val deq = AXIStreamSlaveIF (UInt(data_width.W))
+    })    
+}
+
+class SobelAndNonMaxSupressionFilter (data_width: Int, width: Int, height: Int) extends AbstractImageFilter (data_width, width, height) {
+    val sobel = Module (new SobelFilter (data_width, width, height))
+    val nonmaxSupression = Module (new NonMaxSupression (data_width, width, height))
+
+    io.enq <> sobel.io.enq
+    sobel.io.deq <> nonmaxSupression.io.deq
+    nonmaxSupression.io.deq <> io.deq
 }
 
 // Top module class
