@@ -115,7 +115,6 @@ class ImageFilter (data_width: Int, width: Int, height: Int) extends AbstractIma
     io.deq.last := io.enq.last
     io.deq.user := io.enq.user
     // io.deq.bits := io.enq.bits
-    io.deq.bits := dataReg
 }
 
 // This filter does Nothing
@@ -240,7 +239,7 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
     */
     
 
-    val buffers = Array.fill (depth) { Module (new ImageFilter (data_width, width, height)) }
+    val buffers = Array.fill (depth) { Module (new NothingFilter (data_width, width, height)) }
 
     // Connect each filter
     for (i <- 0 until depth-1) {

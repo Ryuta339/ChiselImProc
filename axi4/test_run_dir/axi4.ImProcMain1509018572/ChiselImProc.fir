@@ -1,6 +1,6 @@
 ;buildInfoPackage: chisel3, version: 3.3.1, scalaVersion: 2.12.11, sbtVersion: 1.3.10
 circuit ChiselImProc : 
-  module ImageFilter : 
+  module NothingFilter : 
     input clock : Clock
     input reset : Reset
     output io : {flip enq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, deq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, state_reg : UInt<2>, shadow_reg : UInt<24>, shadow_user : UInt<1>, shadow_last : UInt<1>}
@@ -81,9 +81,9 @@ circuit ChiselImProc :
     io.shadow_last <= shadowLastReg @[ChiselImProc.scala 107:20]
     io.deq.last <= io.enq.last @[ChiselImProc.scala 115:17]
     io.deq.user <= io.enq.user @[ChiselImProc.scala 116:17]
-    io.deq.bits <= dataReg @[ChiselImProc.scala 118:17]
+    io.deq.bits <= dataReg @[ChiselImProc.scala 122:17]
     
-  module ImageFilter_1 : 
+  module NothingFilter_1 : 
     input clock : Clock
     input reset : Reset
     output io : {flip enq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, deq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, state_reg : UInt<2>, shadow_reg : UInt<24>, shadow_user : UInt<1>, shadow_last : UInt<1>}
@@ -164,9 +164,9 @@ circuit ChiselImProc :
     io.shadow_last <= shadowLastReg @[ChiselImProc.scala 107:20]
     io.deq.last <= io.enq.last @[ChiselImProc.scala 115:17]
     io.deq.user <= io.enq.user @[ChiselImProc.scala 116:17]
-    io.deq.bits <= dataReg @[ChiselImProc.scala 118:17]
+    io.deq.bits <= dataReg @[ChiselImProc.scala 122:17]
     
-  module ImageFilter_2 : 
+  module NothingFilter_2 : 
     input clock : Clock
     input reset : Reset
     output io : {flip enq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, deq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, state_reg : UInt<2>, shadow_reg : UInt<24>, shadow_user : UInt<1>, shadow_last : UInt<1>}
@@ -247,9 +247,9 @@ circuit ChiselImProc :
     io.shadow_last <= shadowLastReg @[ChiselImProc.scala 107:20]
     io.deq.last <= io.enq.last @[ChiselImProc.scala 115:17]
     io.deq.user <= io.enq.user @[ChiselImProc.scala 116:17]
-    io.deq.bits <= dataReg @[ChiselImProc.scala 118:17]
+    io.deq.bits <= dataReg @[ChiselImProc.scala 122:17]
     
-  module ImageFilter_3 : 
+  module NothingFilter_3 : 
     input clock : Clock
     input reset : Reset
     output io : {flip enq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, deq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, state_reg : UInt<2>, shadow_reg : UInt<24>, shadow_user : UInt<1>, shadow_last : UInt<1>}
@@ -330,9 +330,9 @@ circuit ChiselImProc :
     io.shadow_last <= shadowLastReg @[ChiselImProc.scala 107:20]
     io.deq.last <= io.enq.last @[ChiselImProc.scala 115:17]
     io.deq.user <= io.enq.user @[ChiselImProc.scala 116:17]
-    io.deq.bits <= dataReg @[ChiselImProc.scala 118:17]
+    io.deq.bits <= dataReg @[ChiselImProc.scala 122:17]
     
-  module ImageFilter_4 : 
+  module NothingFilter_4 : 
     input clock : Clock
     input reset : Reset
     output io : {flip enq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, deq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, state_reg : UInt<2>, shadow_reg : UInt<24>, shadow_user : UInt<1>, shadow_last : UInt<1>}
@@ -413,9 +413,9 @@ circuit ChiselImProc :
     io.shadow_last <= shadowLastReg @[ChiselImProc.scala 107:20]
     io.deq.last <= io.enq.last @[ChiselImProc.scala 115:17]
     io.deq.user <= io.enq.user @[ChiselImProc.scala 116:17]
-    io.deq.bits <= dataReg @[ChiselImProc.scala 118:17]
+    io.deq.bits <= dataReg @[ChiselImProc.scala 122:17]
     
-  module ImageFilter_5 : 
+  module NothingFilter_5 : 
     input clock : Clock
     input reset : Reset
     output io : {flip enq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, deq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, state_reg : UInt<2>, shadow_reg : UInt<24>, shadow_user : UInt<1>, shadow_last : UInt<1>}
@@ -496,9 +496,9 @@ circuit ChiselImProc :
     io.shadow_last <= shadowLastReg @[ChiselImProc.scala 107:20]
     io.deq.last <= io.enq.last @[ChiselImProc.scala 115:17]
     io.deq.user <= io.enq.user @[ChiselImProc.scala 116:17]
-    io.deq.bits <= dataReg @[ChiselImProc.scala 118:17]
+    io.deq.bits <= dataReg @[ChiselImProc.scala 122:17]
     
-  module ImageFilter_6 : 
+  module NothingFilter_6 : 
     input clock : Clock
     input reset : Reset
     output io : {flip enq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, deq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, state_reg : UInt<2>, shadow_reg : UInt<24>, shadow_user : UInt<1>, shadow_last : UInt<1>}
@@ -579,9 +579,9 @@ circuit ChiselImProc :
     io.shadow_last <= shadowLastReg @[ChiselImProc.scala 107:20]
     io.deq.last <= io.enq.last @[ChiselImProc.scala 115:17]
     io.deq.user <= io.enq.user @[ChiselImProc.scala 116:17]
-    io.deq.bits <= dataReg @[ChiselImProc.scala 118:17]
+    io.deq.bits <= dataReg @[ChiselImProc.scala 122:17]
     
-  module ImageFilter_7 : 
+  module NothingFilter_7 : 
     input clock : Clock
     input reset : Reset
     output io : {flip enq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, deq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, state_reg : UInt<2>, shadow_reg : UInt<24>, shadow_user : UInt<1>, shadow_last : UInt<1>}
@@ -662,84 +662,84 @@ circuit ChiselImProc :
     io.shadow_last <= shadowLastReg @[ChiselImProc.scala 107:20]
     io.deq.last <= io.enq.last @[ChiselImProc.scala 115:17]
     io.deq.user <= io.enq.user @[ChiselImProc.scala 116:17]
-    io.deq.bits <= dataReg @[ChiselImProc.scala 118:17]
+    io.deq.bits <= dataReg @[ChiselImProc.scala 122:17]
     
   module ChiselImProc : 
     input clock : Clock
     input reset : UInt<1>
     output io : {flip enq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, deq : {flip ready : UInt<1>, valid : UInt<1>, bits : UInt<24>, user : UInt<1>, last : UInt<1>}, state_reg : UInt<2>, shadow_reg : UInt<24>, shadow_user : UInt<1>, shadow_last : UInt<1>}
     
-    inst ImageFilter of ImageFilter @[ChiselImProc.scala 243:47]
-    ImageFilter.clock <= clock
-    ImageFilter.reset <= reset
-    inst ImageFilter_1 of ImageFilter_1 @[ChiselImProc.scala 243:47]
-    ImageFilter_1.clock <= clock
-    ImageFilter_1.reset <= reset
-    inst ImageFilter_2 of ImageFilter_2 @[ChiselImProc.scala 243:47]
-    ImageFilter_2.clock <= clock
-    ImageFilter_2.reset <= reset
-    inst ImageFilter_3 of ImageFilter_3 @[ChiselImProc.scala 243:47]
-    ImageFilter_3.clock <= clock
-    ImageFilter_3.reset <= reset
-    inst ImageFilter_4 of ImageFilter_4 @[ChiselImProc.scala 243:47]
-    ImageFilter_4.clock <= clock
-    ImageFilter_4.reset <= reset
-    inst ImageFilter_5 of ImageFilter_5 @[ChiselImProc.scala 243:47]
-    ImageFilter_5.clock <= clock
-    ImageFilter_5.reset <= reset
-    inst ImageFilter_6 of ImageFilter_6 @[ChiselImProc.scala 243:47]
-    ImageFilter_6.clock <= clock
-    ImageFilter_6.reset <= reset
-    inst ImageFilter_7 of ImageFilter_7 @[ChiselImProc.scala 243:47]
-    ImageFilter_7.clock <= clock
-    ImageFilter_7.reset <= reset
-    ImageFilter_1.io.enq.last <= ImageFilter.io.deq.last @[ChiselImProc.scala 247:30]
-    ImageFilter_1.io.enq.user <= ImageFilter.io.deq.user @[ChiselImProc.scala 247:30]
-    ImageFilter_1.io.enq.bits <= ImageFilter.io.deq.bits @[ChiselImProc.scala 247:30]
-    ImageFilter_1.io.enq.valid <= ImageFilter.io.deq.valid @[ChiselImProc.scala 247:30]
-    ImageFilter.io.deq.ready <= ImageFilter_1.io.enq.ready @[ChiselImProc.scala 247:30]
-    ImageFilter_2.io.enq.last <= ImageFilter_1.io.deq.last @[ChiselImProc.scala 247:30]
-    ImageFilter_2.io.enq.user <= ImageFilter_1.io.deq.user @[ChiselImProc.scala 247:30]
-    ImageFilter_2.io.enq.bits <= ImageFilter_1.io.deq.bits @[ChiselImProc.scala 247:30]
-    ImageFilter_2.io.enq.valid <= ImageFilter_1.io.deq.valid @[ChiselImProc.scala 247:30]
-    ImageFilter_1.io.deq.ready <= ImageFilter_2.io.enq.ready @[ChiselImProc.scala 247:30]
-    ImageFilter_3.io.enq.last <= ImageFilter_2.io.deq.last @[ChiselImProc.scala 247:30]
-    ImageFilter_3.io.enq.user <= ImageFilter_2.io.deq.user @[ChiselImProc.scala 247:30]
-    ImageFilter_3.io.enq.bits <= ImageFilter_2.io.deq.bits @[ChiselImProc.scala 247:30]
-    ImageFilter_3.io.enq.valid <= ImageFilter_2.io.deq.valid @[ChiselImProc.scala 247:30]
-    ImageFilter_2.io.deq.ready <= ImageFilter_3.io.enq.ready @[ChiselImProc.scala 247:30]
-    ImageFilter_4.io.enq.last <= ImageFilter_3.io.deq.last @[ChiselImProc.scala 247:30]
-    ImageFilter_4.io.enq.user <= ImageFilter_3.io.deq.user @[ChiselImProc.scala 247:30]
-    ImageFilter_4.io.enq.bits <= ImageFilter_3.io.deq.bits @[ChiselImProc.scala 247:30]
-    ImageFilter_4.io.enq.valid <= ImageFilter_3.io.deq.valid @[ChiselImProc.scala 247:30]
-    ImageFilter_3.io.deq.ready <= ImageFilter_4.io.enq.ready @[ChiselImProc.scala 247:30]
-    ImageFilter_5.io.enq.last <= ImageFilter_4.io.deq.last @[ChiselImProc.scala 247:30]
-    ImageFilter_5.io.enq.user <= ImageFilter_4.io.deq.user @[ChiselImProc.scala 247:30]
-    ImageFilter_5.io.enq.bits <= ImageFilter_4.io.deq.bits @[ChiselImProc.scala 247:30]
-    ImageFilter_5.io.enq.valid <= ImageFilter_4.io.deq.valid @[ChiselImProc.scala 247:30]
-    ImageFilter_4.io.deq.ready <= ImageFilter_5.io.enq.ready @[ChiselImProc.scala 247:30]
-    ImageFilter_6.io.enq.last <= ImageFilter_5.io.deq.last @[ChiselImProc.scala 247:30]
-    ImageFilter_6.io.enq.user <= ImageFilter_5.io.deq.user @[ChiselImProc.scala 247:30]
-    ImageFilter_6.io.enq.bits <= ImageFilter_5.io.deq.bits @[ChiselImProc.scala 247:30]
-    ImageFilter_6.io.enq.valid <= ImageFilter_5.io.deq.valid @[ChiselImProc.scala 247:30]
-    ImageFilter_5.io.deq.ready <= ImageFilter_6.io.enq.ready @[ChiselImProc.scala 247:30]
-    ImageFilter_7.io.enq.last <= ImageFilter_6.io.deq.last @[ChiselImProc.scala 247:30]
-    ImageFilter_7.io.enq.user <= ImageFilter_6.io.deq.user @[ChiselImProc.scala 247:30]
-    ImageFilter_7.io.enq.bits <= ImageFilter_6.io.deq.bits @[ChiselImProc.scala 247:30]
-    ImageFilter_7.io.enq.valid <= ImageFilter_6.io.deq.valid @[ChiselImProc.scala 247:30]
-    ImageFilter_6.io.deq.ready <= ImageFilter_7.io.enq.ready @[ChiselImProc.scala 247:30]
-    ImageFilter.io.enq.last <= io.enq.last @[ChiselImProc.scala 250:12]
-    ImageFilter.io.enq.user <= io.enq.user @[ChiselImProc.scala 250:12]
-    ImageFilter.io.enq.bits <= io.enq.bits @[ChiselImProc.scala 250:12]
-    ImageFilter.io.enq.valid <= io.enq.valid @[ChiselImProc.scala 250:12]
-    io.enq.ready <= ImageFilter.io.enq.ready @[ChiselImProc.scala 250:12]
-    io.deq.last <= ImageFilter_7.io.deq.last @[ChiselImProc.scala 252:12]
-    io.deq.user <= ImageFilter_7.io.deq.user @[ChiselImProc.scala 252:12]
-    io.deq.bits <= ImageFilter_7.io.deq.bits @[ChiselImProc.scala 252:12]
-    io.deq.valid <= ImageFilter_7.io.deq.valid @[ChiselImProc.scala 252:12]
-    ImageFilter_7.io.deq.ready <= io.deq.ready @[ChiselImProc.scala 252:12]
-    io.state_reg <= ImageFilter_7.io.state_reg @[ChiselImProc.scala 254:18]
-    io.shadow_reg <= ImageFilter_7.io.shadow_reg @[ChiselImProc.scala 255:19]
-    io.shadow_user <= ImageFilter_7.io.shadow_user @[ChiselImProc.scala 256:20]
-    io.shadow_last <= ImageFilter_7.io.shadow_last @[ChiselImProc.scala 257:20]
+    inst NothingFilter of NothingFilter @[ChiselImProc.scala 242:47]
+    NothingFilter.clock <= clock
+    NothingFilter.reset <= reset
+    inst NothingFilter_1 of NothingFilter_1 @[ChiselImProc.scala 242:47]
+    NothingFilter_1.clock <= clock
+    NothingFilter_1.reset <= reset
+    inst NothingFilter_2 of NothingFilter_2 @[ChiselImProc.scala 242:47]
+    NothingFilter_2.clock <= clock
+    NothingFilter_2.reset <= reset
+    inst NothingFilter_3 of NothingFilter_3 @[ChiselImProc.scala 242:47]
+    NothingFilter_3.clock <= clock
+    NothingFilter_3.reset <= reset
+    inst NothingFilter_4 of NothingFilter_4 @[ChiselImProc.scala 242:47]
+    NothingFilter_4.clock <= clock
+    NothingFilter_4.reset <= reset
+    inst NothingFilter_5 of NothingFilter_5 @[ChiselImProc.scala 242:47]
+    NothingFilter_5.clock <= clock
+    NothingFilter_5.reset <= reset
+    inst NothingFilter_6 of NothingFilter_6 @[ChiselImProc.scala 242:47]
+    NothingFilter_6.clock <= clock
+    NothingFilter_6.reset <= reset
+    inst NothingFilter_7 of NothingFilter_7 @[ChiselImProc.scala 242:47]
+    NothingFilter_7.clock <= clock
+    NothingFilter_7.reset <= reset
+    NothingFilter_1.io.enq.last <= NothingFilter.io.deq.last @[ChiselImProc.scala 246:30]
+    NothingFilter_1.io.enq.user <= NothingFilter.io.deq.user @[ChiselImProc.scala 246:30]
+    NothingFilter_1.io.enq.bits <= NothingFilter.io.deq.bits @[ChiselImProc.scala 246:30]
+    NothingFilter_1.io.enq.valid <= NothingFilter.io.deq.valid @[ChiselImProc.scala 246:30]
+    NothingFilter.io.deq.ready <= NothingFilter_1.io.enq.ready @[ChiselImProc.scala 246:30]
+    NothingFilter_2.io.enq.last <= NothingFilter_1.io.deq.last @[ChiselImProc.scala 246:30]
+    NothingFilter_2.io.enq.user <= NothingFilter_1.io.deq.user @[ChiselImProc.scala 246:30]
+    NothingFilter_2.io.enq.bits <= NothingFilter_1.io.deq.bits @[ChiselImProc.scala 246:30]
+    NothingFilter_2.io.enq.valid <= NothingFilter_1.io.deq.valid @[ChiselImProc.scala 246:30]
+    NothingFilter_1.io.deq.ready <= NothingFilter_2.io.enq.ready @[ChiselImProc.scala 246:30]
+    NothingFilter_3.io.enq.last <= NothingFilter_2.io.deq.last @[ChiselImProc.scala 246:30]
+    NothingFilter_3.io.enq.user <= NothingFilter_2.io.deq.user @[ChiselImProc.scala 246:30]
+    NothingFilter_3.io.enq.bits <= NothingFilter_2.io.deq.bits @[ChiselImProc.scala 246:30]
+    NothingFilter_3.io.enq.valid <= NothingFilter_2.io.deq.valid @[ChiselImProc.scala 246:30]
+    NothingFilter_2.io.deq.ready <= NothingFilter_3.io.enq.ready @[ChiselImProc.scala 246:30]
+    NothingFilter_4.io.enq.last <= NothingFilter_3.io.deq.last @[ChiselImProc.scala 246:30]
+    NothingFilter_4.io.enq.user <= NothingFilter_3.io.deq.user @[ChiselImProc.scala 246:30]
+    NothingFilter_4.io.enq.bits <= NothingFilter_3.io.deq.bits @[ChiselImProc.scala 246:30]
+    NothingFilter_4.io.enq.valid <= NothingFilter_3.io.deq.valid @[ChiselImProc.scala 246:30]
+    NothingFilter_3.io.deq.ready <= NothingFilter_4.io.enq.ready @[ChiselImProc.scala 246:30]
+    NothingFilter_5.io.enq.last <= NothingFilter_4.io.deq.last @[ChiselImProc.scala 246:30]
+    NothingFilter_5.io.enq.user <= NothingFilter_4.io.deq.user @[ChiselImProc.scala 246:30]
+    NothingFilter_5.io.enq.bits <= NothingFilter_4.io.deq.bits @[ChiselImProc.scala 246:30]
+    NothingFilter_5.io.enq.valid <= NothingFilter_4.io.deq.valid @[ChiselImProc.scala 246:30]
+    NothingFilter_4.io.deq.ready <= NothingFilter_5.io.enq.ready @[ChiselImProc.scala 246:30]
+    NothingFilter_6.io.enq.last <= NothingFilter_5.io.deq.last @[ChiselImProc.scala 246:30]
+    NothingFilter_6.io.enq.user <= NothingFilter_5.io.deq.user @[ChiselImProc.scala 246:30]
+    NothingFilter_6.io.enq.bits <= NothingFilter_5.io.deq.bits @[ChiselImProc.scala 246:30]
+    NothingFilter_6.io.enq.valid <= NothingFilter_5.io.deq.valid @[ChiselImProc.scala 246:30]
+    NothingFilter_5.io.deq.ready <= NothingFilter_6.io.enq.ready @[ChiselImProc.scala 246:30]
+    NothingFilter_7.io.enq.last <= NothingFilter_6.io.deq.last @[ChiselImProc.scala 246:30]
+    NothingFilter_7.io.enq.user <= NothingFilter_6.io.deq.user @[ChiselImProc.scala 246:30]
+    NothingFilter_7.io.enq.bits <= NothingFilter_6.io.deq.bits @[ChiselImProc.scala 246:30]
+    NothingFilter_7.io.enq.valid <= NothingFilter_6.io.deq.valid @[ChiselImProc.scala 246:30]
+    NothingFilter_6.io.deq.ready <= NothingFilter_7.io.enq.ready @[ChiselImProc.scala 246:30]
+    NothingFilter.io.enq.last <= io.enq.last @[ChiselImProc.scala 249:12]
+    NothingFilter.io.enq.user <= io.enq.user @[ChiselImProc.scala 249:12]
+    NothingFilter.io.enq.bits <= io.enq.bits @[ChiselImProc.scala 249:12]
+    NothingFilter.io.enq.valid <= io.enq.valid @[ChiselImProc.scala 249:12]
+    io.enq.ready <= NothingFilter.io.enq.ready @[ChiselImProc.scala 249:12]
+    io.deq.last <= NothingFilter_7.io.deq.last @[ChiselImProc.scala 251:12]
+    io.deq.user <= NothingFilter_7.io.deq.user @[ChiselImProc.scala 251:12]
+    io.deq.bits <= NothingFilter_7.io.deq.bits @[ChiselImProc.scala 251:12]
+    io.deq.valid <= NothingFilter_7.io.deq.valid @[ChiselImProc.scala 251:12]
+    NothingFilter_7.io.deq.ready <= io.deq.ready @[ChiselImProc.scala 251:12]
+    io.state_reg <= NothingFilter_7.io.state_reg @[ChiselImProc.scala 253:18]
+    io.shadow_reg <= NothingFilter_7.io.shadow_reg @[ChiselImProc.scala 254:19]
+    io.shadow_user <= NothingFilter_7.io.shadow_user @[ChiselImProc.scala 255:20]
+    io.shadow_last <= NothingFilter_7.io.shadow_last @[ChiselImProc.scala 256:20]
     
