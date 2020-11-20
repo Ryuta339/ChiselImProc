@@ -96,7 +96,7 @@ class ImageFilter (data_width: Int, width: Int, height: Int) extends AbstractIma
     
 
     // io.deq.last := lastReg
-    io.deq.user := userReg
+    // io.deq.user := userReg
 
     io.enq.ready := (stateReg === empty || stateReg === one || stateReg === block)
     io.deq.valid := (stateReg === one || stateReg === two)
@@ -113,7 +113,7 @@ class ImageFilter (data_width: Int, width: Int, height: Int) extends AbstractIma
 
     // io.enq <> io.deq
     io.deq.last := io.enq.last
-    // io.deq.user := io.enq.user
+    io.deq.user := io.enq.user
     // io.deq.bits := io.enq.bits
     io.deq.bits := dataReg
 }
