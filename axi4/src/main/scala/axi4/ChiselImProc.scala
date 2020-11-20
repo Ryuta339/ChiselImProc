@@ -58,16 +58,17 @@ class ImageFilter (data_width: Int, width: Int, height: Int) extends AbstractIma
 
     switch (stateReg) {
         is (empty) {
+            userReg := io.enq.user
             when (io.enq.valid) {
                 stateReg := one
                 dataReg := io.enq.bits
-                userReg := io.enq.user
                 lastReg := io.enq.last
             }
         }
         is (one) {
             when (io.deq.ready && !io.enq.valid) {
                 stateReg := empty
+                userReg := io.enq.user
             }.elsewhen (io.deq.ready && io.enq.valid) {
                 stateReg := one
                 dataReg := io.enq.bits
