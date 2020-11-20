@@ -14,11 +14,11 @@ object AXI4Repl extends App {
 }
 
 object RVCounterMain extends App {
-    iotesters.Driver.execute (args, () => new RVCounter (12)) {
+    iotesters.Driver.execute (args, () => new RVCounter (16)) {
         c => new RVCounterUnitTester (c)
     }
 }
 
 object RVCounterRepl extends App {
-    iotesters.Driver.executeFirrtlRepl (args, () => new RVCounter (12))
+    iotesters.Driver.executeFirrtlRepl (args, () => new RVCounter (16))
 }
