@@ -1,0 +1,7 @@
+testOnly muladd.MulAddMain
+testOnly muladd.MulAddMain -- -z Basic
+testOnly muladd.MulAddTester -- -z Basic
+quit[
+quit
+exit
+testOnly muladd.MulAddTester -- -z Basic

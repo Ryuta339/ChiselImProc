@@ -1,0 +1,7 @@
+[0m[[0m[0minfo[0m] [0m[0m[32mMulAddTester:[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mMulAdd[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mBasic test using Driver.execute[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should be used as an alternative way to run specification[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mrunning with --is-verbose[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mrunnung with --generate-vcd-output on[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mrunning with --generate-vcd-output off[0m[0m

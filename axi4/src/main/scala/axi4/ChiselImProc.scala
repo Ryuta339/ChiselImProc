@@ -1,0 +1,246 @@
+package axi4
+
+import chisel3._
+import chisel3.util._
+
+/** Gradient Direction **/
+trait GradDirDefinition {
+    val dir_right :: dir_top_right :: dir_top :: dir_top_left :: Nil = Enum (4)
+}
+
+class GradPix extends Bundle {
+    val grad_dir = UInt (2.W)
+    val value = UInt (8.W)
+}
+
+class MulAdd (data_width: Int, num: Int) extends Module {
+    val io = IO(new Bundle {
+        val a = Input (Vec(num, UInt(data_width.W)))
+        val b = Input (Vec(num, UInt((2*data_width).W)))
+        val output = Output (UInt (32.W))
+    })
+
+    var i = 0
+    var tmp = 0.U((2*data_width).W)
+    while (i < num) {
+        tmp += io.a(i) * io.b (i)
+        i += 1
+    }
+    io.output := tmp    
+}
+
+
+// ImageFilter is a base class for each filter
+// Each filter extends this class.
+// The result of a filter should be written on io.deq.bits
+class ImageFilter (data_width: Int, width: Int, height: Int) extends Module {
+    val io = IO (new FifoAXIStreamIO (UInt (data_width.W)))
+
+    // default output
+    io.deq.last := false.B
+    io.deq.user := false.B
+
+    // define states
+    // block state is not used now
+    val empty :: one :: two :: block :: Nil = Enum (4)
+    val stateReg = RegInit (empty)
+    // val dataReg = RegInit (0.U(data_width.W))
+    val dataReg = Reg (UInt(data_width.W))
+    // val shadowReg = RegInit (0.U(data_width.W))
+    val shadowReg = Reg (UInt(data_width.W))
+    val userReg = Reg (Bool())
+    val shadowUserReg = Reg (Bool())
+    val lastReg = Reg (Bool())
+    val shadowLastReg = Reg (Bool())
+
+    switch (stateReg) {
+        is (empty) {
+            when (io.enq.valid) {
+                stateReg := one
+                dataReg := io.enq.bits
+                userReg := io.enq.user
+                lastReg := io.enq.last
+            }
+        }
+        is (one) {
+            when (io.deq.ready && !io.enq.valid) {
+                stateReg := empty
+            }.elsewhen (io.deq.ready && io.enq.valid) {
+                stateReg := one
+                dataReg := io.enq.bits
+                userReg := io.enq.user
+                lastReg := io.enq.last
+            }.elsewhen (!io.deq.ready && io.enq.valid) {
+                stateReg := two
+                shadowReg := io.enq.bits
+                shadowUserReg := io.enq.user
+                shadowLastReg := io.enq.last
+            }
+        }
+        is (two) {
+            when (io.deq.ready) {
+                dataReg := shadowReg
+                userReg := shadowUserReg
+                lastReg := shadowLastReg
+                stateReg := one
+            }
+        }
+        is (block) {
+            stateReg := empty
+        }
+    }
+    
+
+    /*
+    io.deq.last := lastReg
+    io.deq.user := userReg
+    */
+
+    io.enq.ready := (stateReg === empty || stateReg === one || stateReg === block)
+    io.deq.valid := (stateReg === one || stateReg === two)
+
+    io.state_reg := stateReg
+    /*
+    io.shadow_reg := shadowReg
+    io.shadow_user := shadowUserReg
+    io.shadow_last := shadowLastReg
+    */
+    io.shadow_reg := dataReg
+    io.shadow_user := userReg
+    io.shadow_last := lastReg
+
+    // io.enq <> io.deq
+    io.deq.last := io.enq.last
+    io.deq.user := io.enq.user
+    // io.deq.bits := io.enq.bits
+    io.deq.bits := dataReg
+}
+
+// This filter does Nothing
+class NothingFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
+    io.deq.bits := dataReg
+}
+
+// Only red component passes through this filter
+class RedFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
+    io.deq.bits := dataReg & 0xFF0000.U
+}
+// Only blue component passes through this filter
+class BlueFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
+    io.deq.bits := dataReg & 0x0000FF.U
+}
+
+// This filter converts 256x256x256 rgb color image into 256 gray scale image
+class RGB2GrayFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
+    val pixGray = Wire (UInt(32.W))
+    val rolled = Wire (UInt(16.W))
+    
+    pixGray := ((9437.U * (dataReg & 0x0000FF.U) +
+            38469.U * ((dataReg & 0x00FF00.U) >> 8.U) +
+            19595.U * ((dataReg & 0xFF0000.U) >> 16.U)))
+
+    rolled := (pixGray >> 16.U)
+    io.deq.bits := Mux (rolled > 0xFF.U, 0xFF.U, rolled)
+
+}
+
+// This filter converts 256 gray scale image into 256x256x256 gray scale image
+class Gray2RGBFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
+    io.deq.bits := dataReg << 16.U | dataReg << 8.U | dataReg
+}
+
+class GaussianBlurFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
+    val KERNEL_SIZE = 5
+    val GAUSS_KERNEL = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, UInt(data_width.W)))
+    GAUSS_KERNEL := Seq (
+            1.U,  4.U,  6.U,  4.U, 1.U,
+            4.U, 16.U, 24.U, 16.U, 4.U,
+            6.U, 24.U, 36.U, 24.U, 6.U,
+            4.U, 16.U, 24.U, 16.U, 4.U,
+            1.U,  4.U,  6.U,  4.U, 1.U,
+    )
+
+    val lineBuffer = Reg (Vec (width*KERNEL_SIZE, UInt(data_width.W)))    
+    val windowBuffer = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, UInt (data_width.W)))
+    val sel = Wire (Bool())
+
+    sel := (stateReg===one || stateReg===two) && io.deq.ready
+
+    for (i <- 0 until width*KERNEL_SIZE-1) {
+         lineBuffer(i+1) := Mux (sel, lineBuffer(i), lineBuffer(i+1))
+    }
+    lineBuffer (0) := Mux (sel, dataReg, lineBuffer(0))
+
+    for (yw <- 0 until KERNEL_SIZE; xw <- 0 until (KERNEL_SIZE-1)) {
+        windowBuffer (xw+yw*KERNEL_SIZE) := windowBuffer (xw+yw*KERNEL_SIZE+1)
+    }
+    for (yw <- 0 until KERNEL_SIZE) {
+        windowBuffer ((yw+1)*KERNEL_SIZE-1) := lineBuffer ((yw+1)*width-1)
+    }
+
+    private val ma = Module (new MulAdd (data_width, KERNEL_SIZE*KERNEL_SIZE))
+
+    ma.io.a := GAUSS_KERNEL
+    ma.io.b := windowBuffer
+
+    io.deq.bits := ma.io.output >> 8
+}
+
+class SobelFilter (data_width: Int, width: Int, height: Int) extends Module with GradDirDefinition {
+    val io = IO (new Bundle{
+        val enq = AXIStreamSlaveIF (UInt(data_width.W))
+        val deq = AXIStreamMasterIF (new GradPix)
+    })
+}
+
+// Top module class
+class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extends FifoAXIS (UInt(data_width.W),  depth) {
+
+    val MAX_WIDTH = width
+    val MAX_HEIGHT = height
+
+    val buffers = Array (
+        // RGB -> GrayScale image
+        Module (new RGB2GrayFilter (data_width, width, height)),
+        // Gaussian bler
+        // Module (new GaussianBlurFilter (data_width/3, width, height)),
+        Module (new NothingFilter (data_width/3, width, height)),
+        // Sobel filter
+        Module (new NothingFilter (data_width/3, width, height)),
+        // Non-Maximum suppression
+        Module (new NothingFilter (data_width/3, width, height)),
+        // Zero padding at boundary pixel
+        Module (new NothingFilter (data_width/3, width, height)),
+        // Hysteresis threshold
+        Module (new NothingFilter (data_width/3, width, height)),
+        // Comparison operation
+        Module (new NothingFilter (data_width/3, width, height)),
+        // GrayScale image -> RGB
+        Module (new Gray2RGBFilter (data_width, width, height)),
+    )
+    
+
+    // val buffers = Array.fill (depth) { Module (new ImageFilter (data_width, width, height)) }
+
+    // Connect each filter
+    for (i <- 0 until depth-1) {
+        buffers (i+1).io.enq <> buffers(i).io.deq
+    }
+    // Connect enq of this module and that of first filter
+    io.enq <> buffers(0).io.enq
+    // Connect deq of this module and that of last filter
+    io.deq <> buffers(depth-1).io.deq
+    // Connect shadow registers for debug
+    io.state_reg := buffers(depth-1).io.state_reg
+    io.shadow_reg := buffers(depth-1).io.shadow_reg
+    io.shadow_user := buffers(depth-1).io.shadow_user
+    io.shadow_last := buffers(depth-1).io.shadow_last
+
+    /*
+    io.deq <> io.enq
+    io.state_reg := 0.U(2.W)
+    io.shadow_reg := 0.U(data_width.U)
+    io.shadow_user := false.B
+    io.shadow_last := false.B
+    */ 
+}
