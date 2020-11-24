@@ -1,7 +1,7 @@
 // axi4.ImProcMain1025428811
 // 2020/11/20 18:55
 
-module NothingFilter(
+module NothingOneFilter(
   input         clock,
   input         reset,
   output        io_enq_ready,
@@ -178,72 +178,72 @@ end // initial
     end
   end
 endmodule
-module ChiselImProcOneFilter(
+module ChiselImProc(
   input         clock,
   input         reset,
-  output        s_axis_tready,
-  input         s_axis_tvalid,
-  input  [23:0] s_axis_tdata,
-  input         s_axis_tuser,
-  input         s_axis_tlast,
-  input         m_axis_tready,
-  output        m_axis_tvalid,
-  output [23:0] m_axis_tdata,
-  output        m_axis_tuser,
-  output        m_axis_tlast,
+  output        io_enq_ready,
+  input         io_enq_valid,
+  input  [23:0] io_enq_bits,
+  input         io_enq_user,
+  input         io_enq_last,
+  input         io_deq_ready,
+  output        io_deq_valid,
+  output [23:0] io_deq_bits,
+  output        io_deq_user,
+  output        io_deq_last,
   output [1:0]  io_state_reg,
   output [23:0] io_shadow_reg,
   output        io_shadow_user,
   output        io_shadow_last
 );
-  wire  NothingFilter_clock; // @[ChiselImProc.scala 242:47]
-  wire  NothingFilter_reset; // @[ChiselImProc.scala 242:47]
-  wire  NothingFilter_io_enq_ready; // @[ChiselImProc.scala 242:47]
-  wire  NothingFilter_io_enq_valid; // @[ChiselImProc.scala 242:47]
-  wire [23:0] NothingFilter_io_enq_bits; // @[ChiselImProc.scala 242:47]
-  wire  NothingFilter_io_enq_user; // @[ChiselImProc.scala 242:47]
-  wire  NothingFilter_io_enq_last; // @[ChiselImProc.scala 242:47]
-  wire  NothingFilter_io_deq_ready; // @[ChiselImProc.scala 242:47]
-  wire  NothingFilter_io_deq_valid; // @[ChiselImProc.scala 242:47]
-  wire [23:0] NothingFilter_io_deq_bits; // @[ChiselImProc.scala 242:47]
-  wire  NothingFilter_io_deq_user; // @[ChiselImProc.scala 242:47]
-  wire  NothingFilter_io_deq_last; // @[ChiselImProc.scala 242:47]
-  wire [1:0] NothingFilter_io_state_reg; // @[ChiselImProc.scala 242:47]
-  wire [23:0] NothingFilter_io_shadow_reg; // @[ChiselImProc.scala 242:47]
-  wire  NothingFilter_io_shadow_user; // @[ChiselImProc.scala 242:47]
-  wire  NothingFilter_io_shadow_last; // @[ChiselImProc.scala 242:47]
-  NothingFilter NothingFilter ( // @[ChiselImProc.scala 242:47]
-    .clock(NothingFilter_clock),
-    .reset(NothingFilter_reset),
-    .io_enq_ready(NothingFilter_io_enq_ready),
-    .io_enq_valid(NothingFilter_io_enq_valid),
-    .io_enq_bits(NothingFilter_io_enq_bits),
-    .io_enq_user(NothingFilter_io_enq_user),
-    .io_enq_last(NothingFilter_io_enq_last),
-    .io_deq_ready(NothingFilter_io_deq_ready),
-    .io_deq_valid(NothingFilter_io_deq_valid),
-    .io_deq_bits(NothingFilter_io_deq_bits),
-    .io_deq_user(NothingFilter_io_deq_user),
-    .io_deq_last(NothingFilter_io_deq_last),
-    .io_state_reg(NothingFilter_io_state_reg),
-    .io_shadow_reg(NothingFilter_io_shadow_reg),
-    .io_shadow_user(NothingFilter_io_shadow_user),
-    .io_shadow_last(NothingFilter_io_shadow_last)
+  wire  NothingOneFilter_clock; // @[ChiselImProc.scala 242:47]
+  wire  NothingOneFilter_reset; // @[ChiselImProc.scala 242:47]
+  wire  NothingOneFilter_io_enq_ready; // @[ChiselImProc.scala 242:47]
+  wire  NothingOneFilter_io_enq_valid; // @[ChiselImProc.scala 242:47]
+  wire [23:0] NothingOneFilter_io_enq_bits; // @[ChiselImProc.scala 242:47]
+  wire  NothingOneFilter_io_enq_user; // @[ChiselImProc.scala 242:47]
+  wire  NothingOneFilter_io_enq_last; // @[ChiselImProc.scala 242:47]
+  wire  NothingOneFilter_io_deq_ready; // @[ChiselImProc.scala 242:47]
+  wire  NothingOneFilter_io_deq_valid; // @[ChiselImProc.scala 242:47]
+  wire [23:0] NothingOneFilter_io_deq_bits; // @[ChiselImProc.scala 242:47]
+  wire  NothingOneFilter_io_deq_user; // @[ChiselImProc.scala 242:47]
+  wire  NothingOneFilter_io_deq_last; // @[ChiselImProc.scala 242:47]
+  wire [1:0] NothingOneFilter_io_state_reg; // @[ChiselImProc.scala 242:47]
+  wire [23:0] NothingOneFilter_io_shadow_reg; // @[ChiselImProc.scala 242:47]
+  wire  NothingOneFilter_io_shadow_user; // @[ChiselImProc.scala 242:47]
+  wire  NothingOneFilter_io_shadow_last; // @[ChiselImProc.scala 242:47]
+  NothingOneFilter NothingOneFilter ( // @[ChiselImProc.scala 242:47]
+    .clock(NothingOneFilter_clock),
+    .reset(NothingOneFilter_reset),
+    .io_enq_ready(NothingOneFilter_io_enq_ready),
+    .io_enq_valid(NothingOneFilter_io_enq_valid),
+    .io_enq_bits(NothingOneFilter_io_enq_bits),
+    .io_enq_user(NothingOneFilter_io_enq_user),
+    .io_enq_last(NothingOneFilter_io_enq_last),
+    .io_deq_ready(NothingOneFilter_io_deq_ready),
+    .io_deq_valid(NothingOneFilter_io_deq_valid),
+    .io_deq_bits(NothingOneFilter_io_deq_bits),
+    .io_deq_user(NothingOneFilter_io_deq_user),
+    .io_deq_last(NothingOneFilter_io_deq_last),
+    .io_state_reg(NothingOneFilter_io_state_reg),
+    .io_shadow_reg(NothingOneFilter_io_shadow_reg),
+    .io_shadow_user(NothingOneFilter_io_shadow_user),
+    .io_shadow_last(NothingOneFilter_io_shadow_last)
   );
-  assign s_axis_tready = NothingFilter_io_enq_ready; // @[ChiselImProc.scala 249:12]
-  assign m_axis_tvalid = NothingFilter_io_deq_valid; // @[ChiselImProc.scala 251:12]
-  assign m_axis_tbits = NothingFilter_io_deq_bits; // @[ChiselImProc.scala 251:12]
-  assign m_axis_tuser = NothingFilter_io_deq_user; // @[ChiselImProc.scala 251:12]
-  assign m_axis_tlast = NothingFilter_io_deq_last; // @[ChiselImProc.scala 251:12]
-  assign io_state_reg = NothingFilter_io_state_reg; // @[ChiselImProc.scala 253:18]
-  assign io_shadow_reg = NothingFilter_io_shadow_reg; // @[ChiselImProc.scala 254:19]
-  assign io_shadow_user = NothingFilter_io_shadow_user; // @[ChiselImProc.scala 255:20]
-  assign io_shadow_last = NothingFilter_io_shadow_last; // @[ChiselImProc.scala 256:20]
-  assign NothingFilter_clock = clock;
-  assign NothingFilter_reset = reset;
-  assign NothingFilter_io_enq_valid = s_axis_tvalid; // @[ChiselImProc.scala 249:12]
-  assign NothingFilter_io_enq_bits = s_axis_tdata; // @[ChiselImProc.scala 249:12]
-  assign NothingFilter_io_enq_user = s_axis_tuser; // @[ChiselImProc.scala 249:12]
-  assign NothingFilter_io_enq_last = s_axis_tlast; // @[ChiselImProc.scala 249:12]
-  assign NothingFilter_io_deq_ready = m_axis_tready; // @[ChiselImProc.scala 251:12]
+  assign io_enq_ready = NothingOneFilter_io_enq_ready; // @[ChiselImProc.scala 249:12]
+  assign io_deq_valid = NothingOneFilter_io_deq_valid; // @[ChiselImProc.scala 251:12]
+  assign io_deq_bits = NothingOneFilter_io_deq_bits; // @[ChiselImProc.scala 251:12]
+  assign io_deq_user = NothingOneFilter_io_deq_user; // @[ChiselImProc.scala 251:12]
+  assign io_deq_last = NothingOneFilter_io_deq_last; // @[ChiselImProc.scala 251:12]
+  assign io_state_reg = NothingOneFilter_io_state_reg; // @[ChiselImProc.scala 253:18]
+  assign io_shadow_reg = NothingOneFilter_io_shadow_reg; // @[ChiselImProc.scala 254:19]
+  assign io_shadow_user = NothingOneFilter_io_shadow_user; // @[ChiselImProc.scala 255:20]
+  assign io_shadow_last = NothingOneFilter_io_shadow_last; // @[ChiselImProc.scala 256:20]
+  assign NothingOneFilter_clock = clock;
+  assign NothingOneFilter_reset = reset;
+  assign NothingOneFilter_io_enq_valid = io_enq_valid; // @[ChiselImProc.scala 249:12]
+  assign NothingOneFilter_io_enq_bits = io_enq_bits; // @[ChiselImProc.scala 249:12]
+  assign NothingOneFilter_io_enq_user = io_enq_user; // @[ChiselImProc.scala 249:12]
+  assign NothingOneFilter_io_enq_last = io_enq_last; // @[ChiselImProc.scala 249:12]
+  assign NothingOneFilter_io_deq_ready = io_deq_ready; // @[ChiselImProc.scala 251:12]
 endmodule
