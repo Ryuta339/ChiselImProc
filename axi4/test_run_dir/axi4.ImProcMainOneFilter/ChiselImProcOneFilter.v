@@ -178,7 +178,7 @@ end // initial
     end
   end
 endmodule
-module ChiselImProc(
+module ChiselImProcOneFilter(
   input         clock,
   input         reset,
   output        io_enq_ready,
