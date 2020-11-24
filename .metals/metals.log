@@ -8033,3 +8033,14 @@ java.lang.NullPointerException
 2020.11.20 18:31:26 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
 2020.11.20 18:55:36 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\axi4\Axi4StreamMain.scala
 2020.11.20 19:45:59 INFO  shutting down Metals
+2020.11.24 08:44:10 INFO  Started: Metals version 0.9.5 in workspace 'C:\Users\aonishiken\workspace\chise-muladd' for client vscode.
+2020.11.24 08:44:12 INFO  time: initialize in 1.26s
+2020.11.24 08:44:13 WARN  Build server is not auto-connectable.
+2020.11.24 08:44:13 WARN  no build tool detected in workspace 'C:\Users\aonishiken\workspace\chise-muladd'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2020.11.24 08:44:13 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\axi4\Axi4StreamMain.scala
+2020.11.24 08:44:13 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.11.24 08:44:13 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\axi4\ImProcTester.scala
+2020.11.24 08:44:18 INFO  no build target: using presentation compiler with only scala-library
+2020.11.24 08:44:52 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\axi4\Axi4StreamMain.scala
+11 24, 2020 8:46:23 åﬂëO org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+èÓïÒ: Unsupported notification method: $/setTraceNotification
