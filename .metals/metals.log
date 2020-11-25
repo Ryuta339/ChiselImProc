@@ -8083,3 +8083,6 @@ java.lang.NullPointerException
 åxçê: Unmatched cancel notification for request id 2769
 11 25, 2020 3:55:54 åﬂå„ org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
 åxçê: Unmatched cancel notification for request id 2824
+2020.11.25 16:10:38 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.11.25 16:10:53 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\axi4\Axi4StreamMain.scala
+2020.11.25 16:12:10 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
