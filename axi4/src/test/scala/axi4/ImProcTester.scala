@@ -84,7 +84,7 @@ class ImProcUnitTester2 (c: ChiselImProc) extends PeekPokeTester (c) {
 
 class ImProcTester extends ChiselFlatSpec {
     private val data_width = 24
-    private val depth = 7
+    private val depth = 8
     private val width = 512
     private val height = 512
 

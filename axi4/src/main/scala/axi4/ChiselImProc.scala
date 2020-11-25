@@ -260,8 +260,8 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
         // RGB -> GrayScale image
         Module (new RGB2GrayFilter (data_width, width, height)),
         // Gaussian bler
-        // Module (new GaussianBlurFilter (data_width/3, width, height)),
-        Module (new NothingFilter (data_width/3, width, height)),
+        Module (new GaussianBlurFilter (data_width/3, width, height)),
+        // Module (new NothingFilter (data_width/3, width, height)),
         // Sobel filter
         Module (new NothingFilter (data_width/3, width, height)),
         // Non-Maximum suppression
