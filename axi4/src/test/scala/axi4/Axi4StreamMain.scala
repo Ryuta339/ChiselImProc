@@ -6,7 +6,7 @@ import chisel3.iotesters.{Driver, PeekPokeTester}
 object ImProcMain extends App {
     val MAX_WIDTH = 1280
     val MAX_HEIGHT = 720
-    iotesters.Driver.execute (args, () => new ChiselImProc (24, 8, MAX_WIDTH, MAX_HEIGHT)) {
+    iotesters.Driver.execute (args, () => new ChiselImProc (24, 2, MAX_WIDTH, MAX_HEIGHT)) {
         c => new ImProcUnitTester2 (c)
     }
 }
@@ -14,7 +14,7 @@ object ImProcMain extends App {
 object ImProcRepl extends App {
     val MAX_WIDTH = 1280
     val MAX_HEIGHT = 780
-    iotesters.Driver.executeFirrtlRepl (args, () => new ChiselImProc(24, 8, MAX_WIDTH, MAX_HEIGHT))
+    iotesters.Driver.executeFirrtlRepl (args, () => new ChiselImProc(24, 2, MAX_WIDTH, MAX_HEIGHT))
 }
 
 

@@ -1,0 +1,301 @@
+$date
+2020-11-25T06:07+0000
+$end
+$version
+0.2
+$end
+$comment
+
+$end
+$timescale 1ns  $end
+$scope module ChiselImProc $end
+ $var wire 2 # io_state_reg $end
+ $var wire 1 ) io_enq_user $end
+ $var wire 24 4 io_deq_bits $end
+ $var wire 1 D NothingFilter_1 $end
+ $var wire 1 G io_enq_ready $end
+ $var wire 1 I io_deq_valid $end
+ $var wire 24 M io_enq_bits $end
+ $var wire 1 [ NothingFilter $end
+ $var wire 1 b clock $end
+ $var wire 1 g io_shadow_last $end
+ $var wire 1 h io_shadow_user $end
+ $var wire 1 "" io_deq_ready $end
+ $var wire 1 "& reset $end
+ $var wire 24 "( io_shadow_reg $end
+ $var wire 1 ". io_enq_last $end
+ $var wire 1 "/ io_deq_last $end
+ $var wire 1 "2 io_enq_valid $end
+ $var wire 1 "4 io_deq_user $end
+  $scope module NothingFilter_1 $end
+   $var wire 2 ( _GEN_25 $end
+   $var wire 2 + _GEN_7 $end
+   $var wire 1 , _GEN_19 $end
+   $var wire 2 / io_state_reg $end
+   $var wire 24 1 _GEN_34 $end
+   $var wire 1 5 _GEN_13 $end
+   $var wire 24 8 _GEN_1 $end
+   $var wire 1 : clock $end
+   $var wire 24 = _GEN_4 $end
+   $var wire 1 > io_shadow_last $end
+   $var wire 1 @ io_enq_last $end
+   $var wire 1 A _T $end
+   $var wire 1 B io_shadow_user $end
+   $var wire 24 C _GEN_16 $end
+   $var wire 1 E io_deq_last $end
+   $var wire 1 F io_deq_user $end
+   $var wire 24 J dataReg $end
+   $var wire 1 N io_enq_ready $end
+   $var wire 1 O io_enq_user $end
+   $var wire 1 P io_deq_valid $end
+   $var wire 1 Q shadowUserReg $end
+   $var wire 24 R _GEN_21 $end
+   $var wire 1 S _GEN_36 $end
+   $var wire 24 T _GEN_18 $end
+   $var wire 24 V io_shadow_reg $end
+   $var wire 2 X _GEN_30 $end
+   $var wire 1 Y _GEN_6 $end
+   $var wire 24 Z io_enq_bits $end
+   $var wire 24 ^ io_deq_bits $end
+   $var wire 1 _ shadowLastReg $end
+   $var wire 2 ` _GEN_24 $end
+   $var wire 2 a _GEN_0 $end
+   $var wire 1 c _GEN_12 $end
+   $var wire 2 k _GEN_3 $end
+   $var wire 24 l shadowReg $end
+   $var wire 1 p reset $end
+   $var wire 24 s _GEN_32 $end
+   $var wire 24 t _GEN_26 $end
+   $var wire 2 u stateReg $end
+   $var wire 1 w _GEN_20 $end
+   $var wire 2 | _GEN_14 $end
+   $var wire 1 ~ _GEN_35 $end
+   $var wire 2 "! _GEN_29 $end
+   $var wire 1 "# _GEN_5 $end
+   $var wire 2 "$ _GEN_38 $end
+   $var wire 1 "% io_enq_valid $end
+   $var wire 1 "1 io_deq_ready $end
+   $var wire 24 "3 _GEN_11 $end
+   $var wire 24 "5 _GEN_8 $end
+  $upscope $end
+  $scope module NothingFilter $end
+   $var wire 1 ! io_shadow_last $end
+   $var wire 1 " io_deq_valid $end
+   $var wire 2 $ _GEN_38 $end
+   $var wire 1 % io_enq_user $end
+   $var wire 1 & io_enq_last $end
+   $var wire 1 ' io_deq_user $end
+   $var wire 24 * _GEN_11 $end
+   $var wire 24 - _GEN_26 $end
+   $var wire 1 . _GEN_6 $end
+   $var wire 24 0 _GEN_32 $end
+   $var wire 2 2 _GEN_0 $end
+   $var wire 2 3 _GEN_29 $end
+   $var wire 2 6 _GEN_14 $end
+   $var wire 1 7 io_shadow_user $end
+   $var wire 1 9 _GEN_35 $end
+   $var wire 1 ; _GEN_20 $end
+   $var wire 1 < reset $end
+   $var wire 24 ? shadowReg $end
+   $var wire 2 H _GEN_3 $end
+   $var wire 24 K io_enq_bits $end
+   $var wire 24 L io_deq_bits $end
+   $var wire 1 U io_deq_ready $end
+   $var wire 1 W _GEN_5 $end
+   $var wire 1 \ _GEN_19 $end
+   $var wire 2 ] _GEN_25 $end
+   $var wire 24 d _GEN_8 $end
+   $var wire 1 e _GEN_13 $end
+   $var wire 24 f _GEN_34 $end
+   $var wire 24 i _GEN_16 $end
+   $var wire 2 j stateReg $end
+   $var wire 1 m io_enq_valid $end
+   $var wire 24 n dataReg $end
+   $var wire 2 o io_state_reg $end
+   $var wire 1 q _T $end
+   $var wire 1 r shadowUserReg $end
+   $var wire 2 v _GEN_7 $end
+   $var wire 24 x _GEN_1 $end
+   $var wire 1 y _GEN_36 $end
+   $var wire 24 z _GEN_21 $end
+   $var wire 1 { shadowLastReg $end
+   $var wire 24 } io_shadow_reg $end
+   $var wire 24 "' _GEN_18 $end
+   $var wire 2 ") _GEN_24 $end
+   $var wire 2 "* _GEN_30 $end
+   $var wire 1 "+ io_deq_last $end
+   $var wire 1 ", clock $end
+   $var wire 24 "- _GEN_4 $end
+   $var wire 1 "0 _GEN_12 $end
+   $var wire 1 "6 io_enq_ready $end
+  $upscope $end
+$upscope $end
+$enddefinitions $end
+$dumpvars
+b00 v
+b00 a
+0""
+0&
+b000000000000000000000000 Z
+b000000000000000000000000 =
+0"1
+b000000000000000000000000 i
+b000000000000000000000000 T
+0m
+0g
+b000000000000000000000000 -
+05
+0~
+b000000000000000000000000 L
+b00 j
+0D
+0"#
+b000000000000000000000000 x
+b000000000000000000000000 1
+0[
+0F
+0)
+0r
+0@
+b000000000000000000000000 t
+b000000000000000000000000 "(
+b00 u
+0W
+0%
+b000000000000000000000000 n
+0p
+0>
+0"2
+0!
+b000000000000000000000000 M
+b000000000000000000000000 8
+0"4
+b00 X
+0O
+0:
+0".
+b000000000000000000000000 f
+0{
+b000000000000000000000000 4
+0Q
+0I
+b000000000000000000000000 }
+b000000000000000000000000 K
+b00 "!
+0w
+0b
+b000000000000000000000000 0
+0E
+b000000000000000000000000 *
+b00 +
+b00 |
+b000000000000000000000000 C
+0;
+b000000000000000000000000 R
+0q
+b000000000000000000000000 ?
+b00 ]
+07
+0"
+b00 "*
+b00 #
+b000000000000000000000000 V
+0N
+09
+b00 "$
+0e
+0P
+0"/
+b000000000000000000000000 J
+b00 6
+0"+
+0c
+0"%
+b000000000000000000000000 z
+b00 2
+0_
+b00 `
+0B
+0"6
+0Y
+0<
+0'
+b00 (
+0S
+b00 ")
+0U
+b000000000000000000000000 "3
+b00 k
+0",
+b000000000000000000000000 l
+b00 $
+b000000000000000000000000 d
+b000000000000000000000000 "5
+b00 o
+0"0
+0h
+0.
+b00 /
+0y
+b000000000000000000000000 "-
+0\
+0G
+0"&
+b00 H
+b00 3
+b000000000000000000000000 s
+b000000000000000000000000 ^
+b000000000000000000000000 "'
+0A
+0,
+$end
+#0
+1N
+1<
+1U
+1"6
+1G
+b01 ")
+1"&
+1p
+1A
+1q
+#1
+1",
+1:
+1b
+#6
+0",
+0:
+0b
+#11
+1",
+1:
+1b
+#16
+0",
+0:
+0b
+#21
+1",
+1:
+1b
+#26
+0",
+0:
+0b
+#31
+1",
+1:
+1b
+#36
+0",
+0:
+0b
+#41
+1",
+1:
+1b
+#46
+0"&
+0b
