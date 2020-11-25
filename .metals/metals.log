@@ -8086,3 +8086,5 @@ java.lang.NullPointerException
 2020.11.25 16:10:38 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
 2020.11.25 16:10:53 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\axi4\Axi4StreamMain.scala
 2020.11.25 16:12:10 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.11.25 16:39:20 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\axi4\Axi4StreamMain.scala
+2020.11.25 17:02:30 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\axi4\Axi4StreamMain.scala

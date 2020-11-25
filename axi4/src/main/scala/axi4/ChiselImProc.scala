@@ -256,7 +256,6 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
     val MAX_WIDTH = width
     val MAX_HEIGHT = height
 
-    /*
     val buffers = Array (
         // RGB -> GrayScale image
         Module (new RGB2GrayFilter (data_width, width, height)),
@@ -276,10 +275,9 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
         // GrayScale image -> RGB
         Module (new Gray2RGBFilter (data_width, width, height)),
     )
-    */
     
 
-    val buffers = Array.fill (depth) { Module (new NothingFilter (data_width, width, height)) }
+    // val buffers = Array.fill (depth) { Module (new NothingFilter (data_width, width, height)) }
 
     // Connect each filter
     for (i <- 0 until depth-1) {
