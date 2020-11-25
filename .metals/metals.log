@@ -8050,3 +8050,4 @@ java.lang.NullPointerException
 2020.11.25 10:43:12 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\Fifo.scala
 2020.11.25 10:44:15 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\RVCounter.scala
 2020.11.25 10:44:28 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\AXIStreamDefs.scala
+2020.11.25 15:06:28 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\axi4\Axi4StreamMain.scala
