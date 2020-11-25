@@ -95,8 +95,8 @@ class ImageFilter (data_width: Int, width: Int, height: Int) extends AbstractIma
     }
     
 
-    // io.deq.last := lastReg
-    // io.deq.user := userReg
+    io.deq.last := lastReg
+    io.deq.user := userReg
 
     io.enq.ready := (stateReg === empty || stateReg === one || stateReg === block)
     io.deq.valid := (stateReg === one || stateReg === two)
@@ -112,8 +112,8 @@ class ImageFilter (data_width: Int, width: Int, height: Int) extends AbstractIma
     */
 
     // io.enq <> io.deq
-    io.deq.last := io.enq.last
-    io.deq.user := io.enq.user
+    // io.deq.last := io.enq.last
+    // io.deq.user := io.enq.user
     // io.deq.bits := io.enq.bits
 }
 
@@ -192,6 +192,46 @@ class SobelFilter (data_width: Int, width: Int, height: Int) extends Module with
         val enq = AXIStreamSlaveIF (UInt(data_width.W))
         val deq = AXIStreamMasterIF (new GradPix)
     })
+
+    /*
+    val KERNEL_SIZE = 3
+    // 3x3 horizontal sobel kernel
+    val H_SOBEL_KERNEL = Reg (Vec KERNEL_SIZE*KERNEL_SIZE, SInt(data_width.W))
+    // 3x3 vertical sobel kernel
+    val V_SOBEL_KERNEL = Reg (Vec KERNEL_SIZE*KERNEL_SIZE, SInt(data_width.W))
+    H_SOBEL_KERNEL := Seq (
+        1.S,  0.S, -1.S,
+        2.S,  0.S, -2.S,
+        1.S,  0.S, -1.S,
+    )
+    V_SOBEL_KERNEL = Seq (
+         1.S,  2.S,  1.S,
+         0.S,  0.S,  0.S,
+        -1.S, -2.S, -1.S,
+    )
+
+    val lineBuffer = Reg (Vec (width*KERNEL_SIZE, UInt(data_width.W)))    
+    val windowBuffer = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, UInt (data_width.W)))
+    val sel = Wire (Bool())
+
+    sel := (stateReg===one || stateReg==two) && io.deq.ready
+
+    for (i <- 0 until width*KERNEL_SIZE-1) {
+        lineBuffer(i+1) := Mux (Sel, lineBuffer(i), lineBuffer(i+1))
+    }
+    lineBuffer(0) := Mux (sel, dataReg, lineBuffer(0))
+
+    for (yw <- 0 until KERNEL_SIZE; xw <- 0 until (KERNEL_SIZE-1)) {
+        windowBuffer (xw+yw*KERNEL_SIZE) := windowBuffer (xw+yw*KERNEL_SIZE+1)
+    }
+    for (yw <- 0 until KERNEL_SIZE) {
+        windowBuffer ((yw+1)*KERNEL_SIZE-1) := lineBuffer ((yw+1)*width-1)
+    }
+
+    private val hma = Module (new MulAdd (data_width, KERNEL_SIZE*KERNEL_SIZE))
+    private val vma = Module (new MulAdd (data_width, KERNEL_SIZE*KERNEL_SIZE))
+    */
+
 }
 
 class NonMaxSupression (data_width: Int, width: Int, height: Int) extends Module with GradDirDefinition {
