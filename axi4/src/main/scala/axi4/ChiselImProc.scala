@@ -30,6 +30,22 @@ class MulAdd (data_width: Int, num: Int) extends Module {
     io.output := tmp    
 }
 
+class SMulAdd (data_width: Int, num: Int) extends Module {
+    val io = IO(new Bundle{
+        val a = Input (Vec (num, SInt(data_width.W)))
+        val b = Input (Vec (num, SInt(data_width.W)))
+        val output = Output (SInt ((2*data_width).W))
+    })
+
+    var i = 0
+    var tmp = 0.S ((2*data_width).W)
+    while (i < num) {
+        tmp += io.a(i) + io.b(i)
+        i += 1
+    }
+    io.output := tmp
+}
+
 // set status
 abstract class StatusFifo[T <: Data, U <: Data] (private val genEnq: T, private val genDeq: U, data_width: Int) extends Module {
 
@@ -180,10 +196,10 @@ class GaussianBlurFilter (data_width: Int, width: Int, height: Int) extends Imag
     lineBuffer (0) := Mux (sel, dataReg, lineBuffer(0))
 
     for (yw <- 0 until KERNEL_SIZE; xw <- 0 until (KERNEL_SIZE-1)) {
-        windowBuffer (xw+yw*KERNEL_SIZE) := windowBuffer (xw+yw*KERNEL_SIZE+1)
+        windowBuffer (xw+yw*KERNEL_SIZE) := Mux (sel, windowBuffer (xw+yw*KERNEL_SIZE+1), windowBuffer(xw+yw*KERNEL_SIZE))
     }
     for (yw <- 0 until KERNEL_SIZE) {
-        windowBuffer ((yw+1)*KERNEL_SIZE-1) := lineBuffer ((yw+1)*width-1)
+        windowBuffer ((yw+1)*KERNEL_SIZE-1) := Mux (sel, lineBuffer ((yw+1)*width-1), windowBuffer((yw+1)*KERNEL_SIZE-1))
     }
 
     private val ma = Module (new MulAdd (data_width, KERNEL_SIZE*KERNEL_SIZE))
@@ -202,9 +218,9 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
 
     val KERNEL_SIZE = 3
     // 3x3 horizontal sobel kernel
-    val H_SOBEL_KERNEL = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt(data_width.W)))
+    val H_SOBEL_KERNEL = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt(32.W)))
     // 3x3 vertical sobel kernel
-    val V_SOBEL_KERNEL = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt(data_width.W)))
+    val V_SOBEL_KERNEL = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt(32.W)))
     H_SOBEL_KERNEL := Seq (
         1.S,  0.S, -1.S,
         2.S,  0.S, -2.S,
@@ -217,8 +233,10 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
     )
 
     val lineBuffer = Reg (Vec (width*KERNEL_SIZE, UInt(data_width.W)))    
-    val windowBuffer = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, UInt (data_width.W)))
+    val windowBuffer = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt (32.W)))
     val sel = Wire (Bool())
+
+    setStatus (io)
 
     sel := (stateReg===one || stateReg===two) && io.deq.ready
 
@@ -231,24 +249,24 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
         windowBuffer (xw+yw*KERNEL_SIZE) := windowBuffer (xw+yw*KERNEL_SIZE+1)
     }
     for (yw <- 0 until KERNEL_SIZE) {
-        windowBuffer ((yw+1)*KERNEL_SIZE-1) := lineBuffer ((yw+1)*width-1)
+        windowBuffer ((yw+1)*KERNEL_SIZE-1) := (0.U(32.W) + lineBuffer ((yw+1)*width-1)).asSInt
     }
 
-    private val hma = Module (new MulAdd (data_width, KERNEL_SIZE*KERNEL_SIZE))
-    private val vma = Module (new MulAdd (data_width, KERNEL_SIZE*KERNEL_SIZE))
+    private val hma = Module (new SMulAdd (32, KERNEL_SIZE*KERNEL_SIZE))
+    private val vma = Module (new SMulAdd (32, KERNEL_SIZE*KERNEL_SIZE))
 
     hma.io.a := H_SOBEL_KERNEL
     hma.io.b := windowBuffer
     vma.io.a := V_SOBEL_KERNEL
     vma.io.b := windowBuffer
 
-    val pix_euc = Wire(UInt((2*data_width).W))
+    val pix_euc = Wire(SInt((2*data_width).W))
     val pix_sobel = Wire (SInt((2*data_width).W))
     pix_euc := hma.io.output*hma.io.output + vma.io.output*vma.io.output
-    pix_sobel := Mux (pix_euc > 0xFF.U, 0xFF.S, pix_euc.asSInt)
+    pix_sobel := Mux (pix_euc > 0xFF.S, 0xFF.S, pix_euc.asSInt)
 
     val t_int = Wire (SInt((4*data_width).W))
-    t_int := Mux (hma.io.output === 0.U, 0x7FFFFFFF.S, (vma.io.output * 0x100.U / hma.io.output).asSInt)
+    t_int := Mux (hma.io.output === 0.S, 0x7FFFFFFF.S, (vma.io.output * 0x100.U / hma.io.output).asSInt)
 
     val grad_sobel = Wire (UInt(2.W))
     when (-618.S < t_int && t_int <= -106.S) {
@@ -267,7 +285,71 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
 
 class NonMaxSupression (data_width: Int, width: Int, height: Int)
         extends StatusFifo(new GradPix, UInt(data_width.W), data_width) with GradDirDefinition {
-    val io = IO (new FifoAXIStreamDIO(new GradPix, UInt(data_width.W())))
+    val io = IO (new FifoAXIStreamDIO(new GradPix, UInt(data_width.W)))
+
+   val WINDOW_SIZE = 3
+   val WINDOW_CENTER_IDX = WINDOW_SIZE*WINDOW_SIZE/2
+  
+   val lineBuffer = Reg (Vec (width*WINDOW_SIZE, new GradPix))
+   val windowBuffer = Reg (Vec (WINDOW_SIZE*WINDOW_SIZE, new GradPix))
+   val sel = Wire (Bool())
+
+   setStatus (io)
+
+   sel := (stateReg===one | stateReg===two) && io.deq.ready
+
+   for (i <- 0 until width*WINDOW_SIZE-1) {
+       lineBuffer(i+1) := Mux (sel, lineBuffer(i), lineBuffer(i))
+   }
+   lineBuffer(0) := Mux (sel, dataReg, lineBuffer(0))
+
+   for (yw <- 0 until WINDOW_SIZE; xw <- 0 until (WINDOW_SIZE-1)) {
+       windowBuffer (xw+yw*WINDOW_SIZE) := windowBuffer(xw+yw*WINDOW_SIZE+1)
+   }
+   for (yw <- 0 until WINDOW_SIZE) {
+       windowBuffer ((yw+1)*WINDOW_SIZE-1) := lineBuffer((yw+1)*width-1)
+   }
+
+   val nms = Wire (new GradPix)
+   val vnms = WireInit (0.U (data_width.W))
+   nms := windowBuffer(WINDOW_CENTER_IDX)
+
+   switch (nms.grad_dir) {
+       is (dir_right) {
+           // grad 0 -> left. right
+            when (nms.value < windowBuffer(WINDOW_CENTER_IDX-1).value || nms.value < windowBuffer(WINDOW_CENTER_IDX+1).value) {
+                vnms := 0.U
+            }.otherwise {
+                vnms := nms.value
+            }
+       }
+       is (dir_top_right) {
+           // grad 45 -> upper left, bottom right
+           when (nms.value < windowBuffer(0).value || nms.value < windowBuffer(WINDOW_SIZE*WINDOW_SIZE-1).value) {
+               vnms := 0.U
+           }.otherwise {
+               vnms := nms.value
+           }
+       }
+       is (dir_top) {
+           // grad 90 -> upper, bottom
+           when (nms.value < windowBuffer(WINDOW_CENTER_IDX-WINDOW_SIZE).value || nms.value < windowBuffer(WINDOW_CENTER_IDX+WINDOW_SIZE).value) {
+               vnms := 0.U
+           }.otherwise {
+               vnms := nms.value
+           }
+       }
+       is (dir_top_left) {
+           // grad 135 -> bottom left, upper right
+           when (nms.value < windowBuffer(WINDOW_SIZE-1).value || nms.value < windowBuffer(WINDOW_SIZE*(WINDOW_SIZE-1)).value) {
+               vnms := 0.U
+           }.otherwise {
+               vnms := nms.value
+           }
+       }
+   }
+
+   io.deq.bits := vnms
 }
 
 class SobelAndNonMaxSupressionFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
@@ -275,7 +357,7 @@ class SobelAndNonMaxSupressionFilter (data_width: Int, width: Int, height: Int) 
     val nonmaxSupression = Module (new NonMaxSupression (data_width, width, height))
 
     io.enq <> sobel.io.enq
-    sobel.io.deq <> nonmaxSupression.io.deq
+    sobel.io.deq <> nonmaxSupression.io.enq
     nonmaxSupression.io.deq <> io.deq
 }
 
@@ -292,6 +374,7 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
         Module (new GaussianBlurFilter (data_width/3, width, height)),
         // Module (new NothingFilter (data_width/3, width, height)),
         // Sobel filter
+        // Module (new SobelAndNonMaxSupressionFilter (data_width/3, width, height)),
         Module (new NothingFilter (data_width/3, width, height)),
         // Non-Maximum suppression
         Module (new NothingFilter (data_width/3, width, height)),
