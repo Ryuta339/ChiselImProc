@@ -193,13 +193,11 @@ class GaussianBlurFilter (data_width: Int, width: Int, height: Int) extends Imag
     io.deq.bits := ma.io.output >> 8
 }
 
-class SobelFilter (data_width: Int, width: Int, height: Int) extends Module with GradDirDefinition {
-    val io = IO (new Bundle{
-        val enq = AXIStreamSlaveIF (UInt(data_width.W))
-        val deq = AXIStreamMasterIF (new GradPix)
-    })
+class SobelFilter (data_width: Int, width: Int, height: Int) extends StatusFifo(UInt(data_width.W), new GradPix, data_width) with GradDirDefinition {
+    val io = IO (
+        new FifoAXIStreamDIO(UInt(data_width.W), new GradPix)
+    )
 
-    /*
     val KERNEL_SIZE = 3
     // 3x3 horizontal sobel kernel
     val H_SOBEL_KERNEL = Reg (Vec KERNEL_SIZE*KERNEL_SIZE, SInt(data_width.W))
@@ -236,7 +234,6 @@ class SobelFilter (data_width: Int, width: Int, height: Int) extends Module with
 
     private val hma = Module (new MulAdd (data_width, KERNEL_SIZE*KERNEL_SIZE))
     private val vma = Module (new MulAdd (data_width, KERNEL_SIZE*KERNEL_SIZE))
-    */
 
 }
 
