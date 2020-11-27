@@ -56,7 +56,7 @@ class ImProcUnitTester (c: ChiselImProc) extends PeekPokeTester (c) {
 
     while (outidx < MAX_WIDTH*MAX_HEIGHT) {
         // Write data
-        val vflag = rand.nextInt ()%5 != 0
+        val vflag = rand.nextInt()%5 != 0
         poke (proc.io.enq.valid, if (inidx<MAX_WIDTH*MAX_HEIGHT && vflag) 1 else 0)
         poke (proc.io.enq.bits, if (inidx<MAX_WIDTH*MAX_HEIGHT && vflag) imageIn(inidx) else rand.nextInt(0x1000000))
         poke (proc.io.enq.user, if (inidx==0 && vflag) 1 else 0)
@@ -66,8 +66,9 @@ class ImProcUnitTester (c: ChiselImProc) extends PeekPokeTester (c) {
         }
 
         // Read data
-        poke (proc.io.deq.ready, 1)
-        if (peek (proc.io.deq.valid) == BigInt(1)) {
+        val rflag = rand.nextInt()%5 != 0
+        poke (proc.io.deq.ready, if (rflag) 1 else 0)
+        if (peek (proc.io.deq.valid) == BigInt(1) && rflag) {
             imageOut (outidx) = peek (proc.io.deq.bits).intValue
 
             expect (proc.io.deq.user, if (outidx==0) 1 else 0)
