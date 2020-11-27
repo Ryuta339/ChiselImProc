@@ -8092,3 +8092,13 @@ java.lang.NullPointerException
 11 25, 2020 5:49:39 åﬂå„ org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
 åxçê: Unmatched cancel notification for request id 3354
 2020.11.25 17:49:56 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.11.25 18:32:57 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\axi4\ImProcTester.scala
+2020.11.25 19:19:29 INFO  shutting down Metals
+2020.11.27 10:27:35 INFO  Started: Metals version 0.9.6 in workspace 'C:\Users\aonishiken\workspace\chise-muladd' for client vscode.
+2020.11.27 10:27:37 INFO  time: initialize in 1.5s
+2020.11.27 10:27:38 WARN  Build server is not auto-connectable.
+2020.11.27 10:27:38 WARN  no build tool detected in workspace 'C:\Users\aonishiken\workspace\chise-muladd'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2020.11.27 10:27:38 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.11.27 10:27:38 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\axi4\ImProcTester.scala
+2020.11.27 10:27:43 INFO  no build target: using presentation compiler with only scala-library
+2020.11.27 10:40:54 INFO  shutting down Metals
