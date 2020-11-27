@@ -246,10 +246,10 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
     lineBuffer(0) := Mux (sel, dataReg, lineBuffer(0))
 
     for (yw <- 0 until KERNEL_SIZE; xw <- 0 until (KERNEL_SIZE-1)) {
-        windowBuffer (xw+yw*KERNEL_SIZE) := windowBuffer (xw+yw*KERNEL_SIZE+1)
+        windowBuffer (xw+yw*KERNEL_SIZE) := Mux (sel, windowBuffer (xw+yw*KERNEL_SIZE+1), windowBuffer (xw+yw*KERNEL_SIZE))
     }
     for (yw <- 0 until KERNEL_SIZE) {
-        windowBuffer ((yw+1)*KERNEL_SIZE-1) := (0.U(32.W) + lineBuffer ((yw+1)*width-1)).asSInt
+        windowBuffer ((yw+1)*KERNEL_SIZE-1) := Mux (sel, (0.U(32.W) + lineBuffer ((yw+1)*width-1)).asSInt, windowBuffer ((yw+1)*KERNEL_SIZE-1))
     }
 
     private val hma = Module (new SMulAdd (32, KERNEL_SIZE*KERNEL_SIZE))
@@ -260,10 +260,16 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
     vma.io.a := V_SOBEL_KERNEL
     vma.io.b := windowBuffer
 
-    val pix_euc = Wire(SInt((2*data_width).W))
+    val pix_euc = Wire(SInt((4*data_width).W))
+    val pix_sqrt_tmp = Wire (Vec (2*data_width, Bool()))
+    val pix_sqrt_euc = Wire(SInt((2*data_width).W))
     val pix_sobel = Wire (SInt((2*data_width).W))
     pix_euc := hma.io.output*hma.io.output + vma.io.output*vma.io.output
-    pix_sobel := Mux (pix_euc > 0xFF.S, 0xFF.S, pix_euc.asSInt)
+    for (i <- 0 until 2*data_width) {
+        pix_sqrt_tmp (i) := pix_euc (2*i+1)
+    }
+    pix_sqrt_euc := Cat (pix_sqrt_tmp).asSInt
+    pix_sobel := Mux (pix_sqrt_euc > 0xFF.S, 0xFF.S, pix_sqrt_euc)
 
     val t_int = Wire (SInt((4*data_width).W))
     t_int := Mux (hma.io.output === 0.S, 0x7FFFFFFF.S, (vma.io.output * 0x100.U / hma.io.output).asSInt)
@@ -304,10 +310,10 @@ class NonMaxSupression (data_width: Int, width: Int, height: Int)
    lineBuffer(0) := Mux (sel, dataReg, lineBuffer(0))
 
    for (yw <- 0 until WINDOW_SIZE; xw <- 0 until (WINDOW_SIZE-1)) {
-       windowBuffer (xw+yw*WINDOW_SIZE) := windowBuffer(xw+yw*WINDOW_SIZE+1)
+       windowBuffer (xw+yw*WINDOW_SIZE) := Mux (sel, windowBuffer(xw+yw*WINDOW_SIZE+1), windowBuffer (xw+yw*WINDOW_SIZE))
    }
    for (yw <- 0 until WINDOW_SIZE) {
-       windowBuffer ((yw+1)*WINDOW_SIZE-1) := lineBuffer((yw+1)*width-1)
+       windowBuffer ((yw+1)*WINDOW_SIZE-1) := Mux (sel, lineBuffer((yw+1)*width-1), windowBuffer ((yw+1)*WINDOW_SIZE-1))
    }
 
    val nms = Wire (new GradPix)
@@ -374,8 +380,8 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
         Module (new GaussianBlurFilter (data_width/3, width, height)),
         // Module (new NothingFilter (data_width/3, width, height)),
         // Sobel filter
-        // Module (new SobelAndNonMaxSupressionFilter (data_width/3, width, height)),
-        Module (new NothingFilter (data_width/3, width, height)),
+        Module (new SobelAndNonMaxSupressionFilter (data_width/3, width, height)),
+        // Module (new NothingFilter (data_width/3, width, height)),
         // Non-Maximum suppression
         Module (new NothingFilter (data_width/3, width, height)),
         // Zero padding at boundary pixel
