@@ -21,14 +21,21 @@ abstract class FifoIO[T <: Data] (
 // This class was created by Shata
 // todo:
 // Unify FifoIO
-class FifoAXIStreamIO[T <: Data] (private val gen: T) extends Bundle {
-    val enq = AXIStreamSlaveIF(gen)
-    val deq = AXIStreamMasterIF(gen)
+class FifoAXIStreamDIO[T <: Data, U <: Data] (private val genEnq: T, private val genDeq: U) extends Bundle {
+    val enq = AXIStreamSlaveIF(genEnq)
+    val deq = AXIStreamMasterIF(genDeq)
+}
+
+// This class was created by Shata
+// This class is an AXI Stream IO port that is used when the input data type and output data type are same.
+class FifoAXIStreamIO[T <: Data] (private val gen: T) extends FifoAXIStreamDIO(gen, gen) {
     /* Following declarations are for debug */
+    /*
     val state_reg = Output (UInt(2.W))
     val shadow_reg = Output (gen)
     val shadow_user = Output (Bool ())
     val shadow_last = Output (Bool ())
+    */
 }
 
 class FifoAXISCounterIO[T <: Data] (private val gen: T) extends FifoAXIStreamIO(gen) {

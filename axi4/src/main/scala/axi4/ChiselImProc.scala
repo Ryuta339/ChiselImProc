@@ -101,11 +101,11 @@ class ImageFilter (data_width: Int, width: Int, height: Int) extends AbstractIma
     io.enq.ready := (stateReg === empty || stateReg === one || stateReg === block)
     io.deq.valid := (stateReg === one || stateReg === two)
 
+    /*
     io.state_reg := stateReg
     io.shadow_reg := shadowReg
     io.shadow_user := shadowUserReg
     io.shadow_last := shadowLastReg
-    /*
     io.shadow_reg := dataReg
     io.shadow_user := userReg
     io.shadow_last := lastReg
@@ -288,12 +288,12 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
     // Connect deq of this module and that of last filter
     io.deq <> buffers(depth-1).io.deq
     // Connect shadow registers for debug
+    /*
     io.state_reg := buffers(depth-1).io.state_reg
     io.shadow_reg := buffers(depth-1).io.shadow_reg
     io.shadow_user := buffers(depth-1).io.shadow_user
     io.shadow_last := buffers(depth-1).io.shadow_last
 
-    /*
     io.deq <> io.enq
     io.state_reg := 0.U(2.W)
     io.shadow_reg := 0.U(data_width.U)
