@@ -29,93 +29,99 @@ class MulAdd (data_width: Int, num: Int) extends Module {
     io.output := tmp    
 }
 
-abstract class AbstractImageFilter (data_width: Int, width: Int, height: Int) extends Module {
-    val io = IO (new FifoAXIStreamIO (UInt (data_width.W)))
-
-    // default output
-    io.deq.last := false.B
-    io.deq.user := false.B
-}
-
-// ImageFilter is a base class for each filter
-// Each filter extends this class.
-// The result of a filter should be written on io.deq.bits
-class ImageFilter (data_width: Int, width: Int, height: Int) extends AbstractImageFilter(data_width,width, height) {
-
+// set status
+abstract class StatusFifo[T <: Data, U <: Data] (private val genEnq: T, private val genDeq: U, data_width: Int) extends Module {
 
     // define states
     // block state is not used now
     val empty :: one :: two :: block :: Nil = Enum (4)
     val stateReg = RegInit (empty)
     // val dataReg = RegInit (0.U(data_width.W))
-    val dataReg = Reg (UInt(data_width.W))
+    val dataReg = Reg (genEnq)
     // val shadowReg = RegInit (0.U(data_width.W))
-    val shadowReg = Reg (UInt(data_width.W))
+    val shadowReg = Reg (genEnq)
     val userReg = Reg (Bool())
     val shadowUserReg = Reg (Bool())
     val lastReg = Reg (Bool())
     val shadowLastReg = Reg (Bool())
 
-    switch (stateReg) {
-        is (empty) {
-            userReg := io.enq.user
-            when (io.enq.valid) {
-                stateReg := one
-                dataReg := io.enq.bits
-                lastReg := io.enq.last
+
+    def setStatus (io: FifoAXIStreamDIO[T,U]): Unit = {
+       switch (stateReg) {
+            is (empty) {
+                userReg := io.enq.user
+                when (io.enq.valid) {
+                    stateReg := one
+                    dataReg := io.enq.bits
+                    lastReg := io.enq.last
+                }
             }
-        }
-        is (one) {
-            when (io.deq.ready && !io.enq.valid) {
+            is (one) {
+                when (io.deq.ready && !io.enq.valid) {
+                    stateReg := empty
+                    userReg := io.enq.user
+                }.elsewhen (io.deq.ready && io.enq.valid) {
+                    stateReg := one
+                    dataReg := io.enq.bits
+                    userReg := io.enq.user
+                    lastReg := io.enq.last
+                }.elsewhen (!io.deq.ready && io.enq.valid) {
+                    stateReg := two
+                    shadowReg := io.enq.bits
+                    shadowUserReg := io.enq.user
+                    shadowLastReg := io.enq.last
+                }
+            }
+            is (two) {
+                when (io.deq.ready) {
+                    dataReg := shadowReg
+                    userReg := shadowUserReg
+                    lastReg := shadowLastReg
+                    stateReg := one
+                }
+            }
+            is (block) {
                 stateReg := empty
-                userReg := io.enq.user
-            }.elsewhen (io.deq.ready && io.enq.valid) {
-                stateReg := one
-                dataReg := io.enq.bits
-                userReg := io.enq.user
-                lastReg := io.enq.last
-            }.elsewhen (!io.deq.ready && io.enq.valid) {
-                stateReg := two
-                shadowReg := io.enq.bits
-                shadowUserReg := io.enq.user
-                shadowLastReg := io.enq.last
             }
         }
-        is (two) {
-            when (io.deq.ready) {
-                dataReg := shadowReg
-                userReg := shadowUserReg
-                lastReg := shadowLastReg
-                stateReg := one
-            }
-        }
-        is (block) {
-            stateReg := empty
-        }
+        
+
+        io.deq.last := lastReg
+        io.deq.user := userReg
+
+        io.enq.ready := (stateReg === empty || stateReg === one || stateReg === block)
+        io.deq.valid := (stateReg === one || stateReg === two)
+
+        /*
+        io.state_reg := stateReg
+        io.shadow_reg := shadowReg
+        io.shadow_user := shadowUserReg
+        io.shadow_last := shadowLastReg
+        io.shadow_reg := dataReg
+        io.shadow_user := userReg
+        io.shadow_last := lastReg
+        */
+
+        // io.enq <> io.deq
+        // io.deq.last := io.enq.last
+        // io.deq.user := io.enq.user
+        // io.deq.bits := io.enq.bits
     }
-    
-
-    io.deq.last := lastReg
-    io.deq.user := userReg
-
-    io.enq.ready := (stateReg === empty || stateReg === one || stateReg === block)
-    io.deq.valid := (stateReg === one || stateReg === two)
-
-    /*
-    io.state_reg := stateReg
-    io.shadow_reg := shadowReg
-    io.shadow_user := shadowUserReg
-    io.shadow_last := shadowLastReg
-    io.shadow_reg := dataReg
-    io.shadow_user := userReg
-    io.shadow_last := lastReg
-    */
-
-    // io.enq <> io.deq
-    // io.deq.last := io.enq.last
-    // io.deq.user := io.enq.user
-    // io.deq.bits := io.enq.bits
 }
+
+// ImageFilter is a base class for each filter
+// Each filter extends this class.
+// The result of a filter should be written on io.deq.bits
+class ImageFilter (data_width: Int, width: Int, height: Int) extends StatusFifo(UInt(data_width.W), UInt(data_width.W), data_width) {
+    val io = IO (new FifoAXIStreamIO (UInt (data_width.W)))
+
+    // default output
+    io.deq.last := false.B
+    io.deq.user := false.B
+
+    setStatus(io)
+}
+
 
 // This filter does Nothing
 class NothingFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
@@ -241,7 +247,7 @@ class NonMaxSupression (data_width: Int, width: Int, height: Int) extends Module
     })    
 }
 
-class SobelAndNonMaxSupressionFilter (data_width: Int, width: Int, height: Int) extends AbstractImageFilter (data_width, width, height) {
+class SobelAndNonMaxSupressionFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
     val sobel = Module (new SobelFilter (data_width, width, height))
     val nonmaxSupression = Module (new NonMaxSupression (data_width, width, height))
 
