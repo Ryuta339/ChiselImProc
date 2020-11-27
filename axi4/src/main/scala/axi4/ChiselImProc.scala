@@ -2,6 +2,7 @@ package axi4
 
 import chisel3._
 import chisel3.util._
+import javax.net.ssl.SSLEngineResult.Status
 
 /** Gradient Direction **/
 trait GradDirDefinition {
@@ -16,8 +17,8 @@ class GradPix extends Bundle {
 class MulAdd (data_width: Int, num: Int) extends Module {
     val io = IO(new Bundle {
         val a = Input (Vec(num, UInt(data_width.W)))
-        val b = Input (Vec(num, UInt((2*data_width).W)))
-        val output = Output (UInt (32.W))
+        val b = Input (Vec(num, UInt(data_width.W)))
+        val output = Output (UInt ((2*data_width).W))
     })
 
     var i = 0
@@ -193,22 +194,23 @@ class GaussianBlurFilter (data_width: Int, width: Int, height: Int) extends Imag
     io.deq.bits := ma.io.output >> 8
 }
 
-class SobelFilter (data_width: Int, width: Int, height: Int) extends StatusFifo(UInt(data_width.W), new GradPix, data_width) with GradDirDefinition {
+class SobelFilter (data_width: Int, width: Int, height: Int) 
+        extends StatusFifo(UInt(data_width.W), new GradPix, data_width) with GradDirDefinition {
     val io = IO (
         new FifoAXIStreamDIO(UInt(data_width.W), new GradPix)
     )
 
     val KERNEL_SIZE = 3
     // 3x3 horizontal sobel kernel
-    val H_SOBEL_KERNEL = Reg (Vec KERNEL_SIZE*KERNEL_SIZE, SInt(data_width.W))
+    val H_SOBEL_KERNEL = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt(data_width.W)))
     // 3x3 vertical sobel kernel
-    val V_SOBEL_KERNEL = Reg (Vec KERNEL_SIZE*KERNEL_SIZE, SInt(data_width.W))
+    val V_SOBEL_KERNEL = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt(data_width.W)))
     H_SOBEL_KERNEL := Seq (
         1.S,  0.S, -1.S,
         2.S,  0.S, -2.S,
         1.S,  0.S, -1.S,
     )
-    V_SOBEL_KERNEL = Seq (
+    V_SOBEL_KERNEL := Seq (
          1.S,  2.S,  1.S,
          0.S,  0.S,  0.S,
         -1.S, -2.S, -1.S,
@@ -218,10 +220,10 @@ class SobelFilter (data_width: Int, width: Int, height: Int) extends StatusFifo(
     val windowBuffer = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, UInt (data_width.W)))
     val sel = Wire (Bool())
 
-    sel := (stateReg===one || stateReg==two) && io.deq.ready
+    sel := (stateReg===one || stateReg===two) && io.deq.ready
 
     for (i <- 0 until width*KERNEL_SIZE-1) {
-        lineBuffer(i+1) := Mux (Sel, lineBuffer(i), lineBuffer(i+1))
+        lineBuffer(i+1) := Mux (sel, lineBuffer(i), lineBuffer(i+1))
     }
     lineBuffer(0) := Mux (sel, dataReg, lineBuffer(0))
 
@@ -235,13 +237,37 @@ class SobelFilter (data_width: Int, width: Int, height: Int) extends StatusFifo(
     private val hma = Module (new MulAdd (data_width, KERNEL_SIZE*KERNEL_SIZE))
     private val vma = Module (new MulAdd (data_width, KERNEL_SIZE*KERNEL_SIZE))
 
+    hma.io.a := H_SOBEL_KERNEL
+    hma.io.b := windowBuffer
+    vma.io.a := V_SOBEL_KERNEL
+    vma.io.b := windowBuffer
+
+    val pix_euc = Wire(UInt((2*data_width).W))
+    val pix_sobel = Wire (SInt((2*data_width).W))
+    pix_euc := hma.io.output*hma.io.output + vma.io.output*vma.io.output
+    pix_sobel := Mux (pix_euc > 0xFF.U, 0xFF.S, pix_euc.asSInt)
+
+    val t_int = Wire (SInt((4*data_width).W))
+    t_int := Mux (hma.io.output === 0.U, 0x7FFFFFFF.S, (vma.io.output * 0x100.U / hma.io.output).asSInt)
+
+    val grad_sobel = Wire (UInt(2.W))
+    when (-618.S < t_int && t_int <= -106.S) {
+        grad_sobel := dir_top_left
+    }.elsewhen (-106.S < t_int && t_int <= 106.S) {
+        grad_sobel := dir_right
+    }.elsewhen (106.S < t_int && t_int <= 618.S) {
+        grad_sobel := dir_top_right
+    }.otherwise {
+        grad_sobel := dir_top
+    }
+
+    io.deq.bits.grad_dir := grad_sobel
+    io.deq.bits.value := pix_sobel.asUInt
 }
 
-class NonMaxSupression (data_width: Int, width: Int, height: Int) extends Module with GradDirDefinition {
-    val io = IO (new Bundle {
-        val enq = AXIStreamSlaveIF (new GradPix)
-        val deq = AXIStreamSlaveIF (UInt(data_width.W))
-    })    
+class NonMaxSupression (data_width: Int, width: Int, height: Int)
+        extends StatusFifo(new GradPix, UInt(data_width.W), data_width) with GradDirDefinition {
+    val io = IO (new FifoAXIStreamDIO(new GradPix, UInt(data_width.W())))
 }
 
 class SobelAndNonMaxSupressionFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
