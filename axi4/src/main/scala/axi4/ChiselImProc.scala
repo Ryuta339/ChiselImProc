@@ -262,14 +262,14 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
     vma.io.b := windowBuffer
 
     val pix_euc = Wire(UInt((4*data_width).W))
-    val pix_sqrt_tmp = Wire (Vec (2*data_width, Bool()))
     val pix_sqrt_euc = Wire(UInt((2*data_width).W))
     val pix_sobel = Wire (UInt((2*data_width).W))
     pix_euc := (hma.io.output*hma.io.output + vma.io.output*vma.io.output).asUInt
-    for (i <- 0 until 2*data_width) {
-        pix_sqrt_tmp (2*data_width-i-1) := pix_euc (2*i) | pix_euc(2*i+1)
-    }
-    pix_sqrt_euc := Cat (pix_sqrt_tmp)
+
+    private val sqrtuint = Module (new SqrtExtractionUInt (2*data_width))
+    sqrtuint.io.z := pix_euc
+    pix_sqrt_euc := sqrtuint.io.q
+
     pix_sobel := Mux (pix_sqrt_euc > 0xFF.U, 0xFF.U, pix_sqrt_euc)
 
     BoringUtils.addSource (pix_euc, "uniqueId2")
