@@ -43,6 +43,11 @@ class FifoAXISCounterIO[T <: Data] (private val gen: T) extends FifoAXIStreamIO(
     val hcount = Output (UInt (20.W))
 }
 
+class DebugFifoAXIStreamIO[T <: Data] (private val gen: T) extends FifoAXIStreamIO(gen) {
+    val dport = Output (UInt (32.W))
+    val dport2 = Output (UInt (32.W))
+}
+
 // This class was renamed from FifoIO in chisel-book.
 class FifoDecoupledIO[T <: Data] (gen: T) extends 
         FifoIO[T] (gen, Flipped (new DecoupledIO (gen)), new DecoupledIO (gen)) {
@@ -56,7 +61,7 @@ abstract class Fifo[T <: Data] (gen: T, depth: Int) extends Module {
 // Todo:
 // Unify Fifo class
 abstract class FifoAXIS[T <: Data] (gen: T, depth: Int) extends Module {
-    val io = IO (new FifoAXIStreamIO[T] (gen))
+    val io = IO (new DebugFifoAXIStreamIO[T] (gen))
     assert (depth > 0, "Number of buffer elements needs to be larger than 0")
 }
 

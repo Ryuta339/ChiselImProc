@@ -2,6 +2,7 @@ package axi4
 
 import chisel3._
 import chisel3.util._
+import chisel3.util.experimental._
 import javax.net.ssl.SSLEngineResult.Status
 
 /** Gradient Direction **/
@@ -40,7 +41,7 @@ class SMulAdd (data_width: Int, num: Int) extends Module {
     var i = 0
     var tmp = 0.S ((2*data_width).W)
     while (i < num) {
-        tmp += io.a(i) + io.b(i)
+        tmp += io.a(i) * io.b(i)
         i += 1
     }
     io.output := tmp
@@ -218,9 +219,9 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
 
     val KERNEL_SIZE = 3
     // 3x3 horizontal sobel kernel
-    val H_SOBEL_KERNEL = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt(32.W)))
+    val H_SOBEL_KERNEL = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt(16.W)))
     // 3x3 vertical sobel kernel
-    val V_SOBEL_KERNEL = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt(32.W)))
+    val V_SOBEL_KERNEL = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt(16.W)))
     H_SOBEL_KERNEL := Seq (
         1.S,  0.S, -1.S,
         2.S,  0.S, -2.S,
@@ -233,7 +234,7 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
     )
 
     val lineBuffer = Reg (Vec (width*KERNEL_SIZE, UInt(data_width.W)))    
-    val windowBuffer = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt (32.W)))
+    val windowBuffer = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt ((2*data_width).W)))
     val sel = Wire (Bool())
 
     setStatus (io)
@@ -249,30 +250,33 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
         windowBuffer (xw+yw*KERNEL_SIZE) := Mux (sel, windowBuffer (xw+yw*KERNEL_SIZE+1), windowBuffer (xw+yw*KERNEL_SIZE))
     }
     for (yw <- 0 until KERNEL_SIZE) {
-        windowBuffer ((yw+1)*KERNEL_SIZE-1) := Mux (sel, (0.U(32.W) + lineBuffer ((yw+1)*width-1)).asSInt, windowBuffer ((yw+1)*KERNEL_SIZE-1))
+        windowBuffer ((yw+1)*KERNEL_SIZE-1) := Mux (sel, (0.U((2*data_width).W)+lineBuffer ((yw+1)*width-1)).asSInt, windowBuffer ((yw+1)*KERNEL_SIZE-1))
     }
 
-    private val hma = Module (new SMulAdd (32, KERNEL_SIZE*KERNEL_SIZE))
-    private val vma = Module (new SMulAdd (32, KERNEL_SIZE*KERNEL_SIZE))
+    private val hma = Module (new SMulAdd (16, KERNEL_SIZE*KERNEL_SIZE))
+    private val vma = Module (new SMulAdd (16, KERNEL_SIZE*KERNEL_SIZE))
 
     hma.io.a := H_SOBEL_KERNEL
     hma.io.b := windowBuffer
     vma.io.a := V_SOBEL_KERNEL
     vma.io.b := windowBuffer
 
-    val pix_euc = Wire(SInt((4*data_width).W))
+    val pix_euc = Wire(UInt((4*data_width).W))
     val pix_sqrt_tmp = Wire (Vec (2*data_width, Bool()))
-    val pix_sqrt_euc = Wire(SInt((2*data_width).W))
-    val pix_sobel = Wire (SInt((2*data_width).W))
-    pix_euc := hma.io.output*hma.io.output + vma.io.output*vma.io.output
+    val pix_sqrt_euc = Wire(UInt((2*data_width).W))
+    val pix_sobel = Wire (UInt((2*data_width).W))
+    pix_euc := (hma.io.output*hma.io.output + vma.io.output*vma.io.output).asUInt
     for (i <- 0 until 2*data_width) {
-        pix_sqrt_tmp (i) := pix_euc (2*i+1)
+        pix_sqrt_tmp (2*data_width-i-1) := pix_euc (2*i)
     }
-    pix_sqrt_euc := Cat (pix_sqrt_tmp).asSInt
-    pix_sobel := Mux (pix_sqrt_euc > 0xFF.S, 0xFF.S, pix_sqrt_euc)
+    pix_sqrt_euc := Cat (pix_sqrt_tmp)
+    pix_sobel := Mux (pix_sqrt_euc > 0xFF.U, 0xFF.U, pix_sqrt_euc)
+
+    BoringUtils.addSource (pix_euc, "uniqueId2")
+    BoringUtils.addSource (pix_sqrt_euc, "uniqueId")
 
     val t_int = Wire (SInt((4*data_width).W))
-    t_int := Mux (hma.io.output === 0.S, 0x7FFFFFFF.S, (vma.io.output * 0x100.U / hma.io.output).asSInt)
+    t_int := Mux (hma.io.output === 0.S, 0x7FFFFFFF.S, vma.io.output * 0x100.S / hma.io.output)
 
     val grad_sobel = Wire (UInt(2.W))
     when (-618.S < t_int && t_int <= -106.S) {
@@ -286,7 +290,7 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
     }
 
     io.deq.bits.grad_dir := grad_sobel
-    io.deq.bits.value := pix_sobel.asUInt
+    io.deq.bits.value := pix_sobel
 }
 
 class NonMaxSupression (data_width: Int, width: Int, height: Int)
@@ -418,4 +422,10 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
     io.shadow_user := false.B
     io.shadow_last := false.B
     */ 
+    val dWire = WireInit (0.U(32.W))
+    val dWire2 = WireInit (0.U(32.W))
+    BoringUtils.addSink (dWire, "uniqueId")
+    BoringUtils.addSink (dWire2, "uniqueId2")
+    io.dport := dWire
+    io.dport2 := dWire2
 }
