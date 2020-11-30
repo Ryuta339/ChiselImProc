@@ -15,7 +15,7 @@
   },
   {
     "class":"firrtl.options.TargetDirAnnotation",
-    "directory":"test_run_dir/axi4.ImProcTester52727993"
+    "directory":"test_run_dir/axi4.ImProcMain2005044027"
   },
   {
     "class":"firrtl.options.OutputAnnotationFileAnnotation",
@@ -27,6 +27,6 @@
   },
   {
     "class":"firrtl.transforms.BlackBoxTargetDirAnno",
-    "targetDir":"test_run_dir/axi4.ImProcTester52727993"
+    "targetDir":"test_run_dir/axi4.ImProcMain2005044027"
   }
 ]
