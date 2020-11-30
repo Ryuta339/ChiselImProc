@@ -253,8 +253,8 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
         windowBuffer ((yw+1)*KERNEL_SIZE-1) := Mux (sel, (0.U((2*data_width).W)+lineBuffer ((yw+1)*width-1)).asSInt, windowBuffer ((yw+1)*KERNEL_SIZE-1))
     }
 
-    private val hma = Module (new SMulAdd (16, KERNEL_SIZE*KERNEL_SIZE))
-    private val vma = Module (new SMulAdd (16, KERNEL_SIZE*KERNEL_SIZE))
+    private val hma = Module (new SMulAdd (2*data_width, KERNEL_SIZE*KERNEL_SIZE))
+    private val vma = Module (new SMulAdd (2*data_width, KERNEL_SIZE*KERNEL_SIZE))
 
     hma.io.a := H_SOBEL_KERNEL
     hma.io.b := windowBuffer
@@ -309,7 +309,7 @@ class NonMaxSupression (data_width: Int, width: Int, height: Int)
    sel := (stateReg===one | stateReg===two) && io.deq.ready
 
    for (i <- 0 until width*WINDOW_SIZE-1) {
-       lineBuffer(i+1) := Mux (sel, lineBuffer(i), lineBuffer(i))
+       lineBuffer(i+1) := Mux (sel, lineBuffer(i), lineBuffer(i+1))
    }
    lineBuffer(0) := Mux (sel, dataReg, lineBuffer(0))
 
