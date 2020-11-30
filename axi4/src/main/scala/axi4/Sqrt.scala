@@ -56,19 +56,12 @@ class SqrtExtractionUInt (val data_width: Int = 8) extends Module {
 
     for (i <- data_width-2 to 0 by -1) {
         when (qSub(i+1)) {
-            zj(i) := Cat (rj(i+1)(data_width+i+2, 2*i+2), 0.U((2*i+2).W))
+            zj(i) := Cat (rj(i+1)(data_width+i+2, 2*i+2), io.z(2*i+1, 2*i)) << (2*i).U
         }.otherwise {
-            zj(i) := Cat (zj(i+1)(data_width+i+2, 2*i+2), 0.U((2*i+2).W))
+            zj(i) := Cat (zj(i+1)(data_width+i+2, 2*i+2), io.z(2*i+1, 2*i)) << (2*i).U
         }
-        if (i > 0) {
-            zj(i) := Cat (io.z(2*i+1, 2*i), 0.U((2*i).W))
-            val twire = WireInit (VecInit (qSub.slice(i+1, data_width)))
-            rj(i) := Cat (zj(i)(data_width+i+2, 2*i) - Cat (twire.asUInt, 1.U(2.W)), 0.U((2*i).W))
-        } else {
-            zj(i) := io.z(2*i+1, 2*i)
-            val twire = WireInit (VecInit (qSub.slice(i+1, data_width)))
-            rj(i) := zj(i)(data_width+i+2, 2*i) - Cat (twire.asUInt, 1.U(2.W))
-        }
+        val twire = WireInit (VecInit (qSub.slice(i+1, data_width)))
+        rj(i) := (zj(i)(data_width+i+2, 2*i)- Cat (twire.asUInt, 1.U(2.W))) << (2*i).U
         qSub(i) := ~rj(i)(data_width+i+2)
     }
 
