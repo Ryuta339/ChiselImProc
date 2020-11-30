@@ -31,6 +31,16 @@ class SqrtUIntUnitTester (c: SqrtUInt) extends PeekPokeTester(c) {
     println("hello")
 }
 
+class SqrtExtractionUIntUnitTester (c: SqrtExtractionUInt) extends PeekPokeTester(c) {
+    private val s = c
+    reset(10)
+
+    for (i <- 0 to 0xFF) {
+        poke (s.io.z, i)
+        expect (s.io.q, sqrt(i.toDouble).toInt)
+    }
+}
+
 class SqrtUIntTester extends ChiselFlatSpec {
     private val dataWidth = 32
 
@@ -53,19 +63,57 @@ class SqrtUIntTester extends ChiselFlatSpec {
         } should be (true)
     }
 
-    /*
-    if (backendNames.contains ("verilator")) {
-        "using --backend-name verilator" should "be an alternative way to run using verilator" in {
-            iotesters.Driver.execute (Array("--backend-name", "verilator"), () => new SqrtUInt(dataWidth)) {
-                c => new SqrtUIntUnitTester(c)
+}
+
+class SqrtExtractionUIntTester extends ChiselFlatSpec {
+    private val dataWidth = 8
+
+    private val backendNames = if (firrtl.FileUtils.isCommandAvailable (Seq ("verilator", "--version"))) {
+        Array("firrtl", "verilator")
+    } else {
+        Array ("firrtl")
+    }
+    for (backendName <- backendNames) {
+        "SqrtUInt" should s"calculate square root" in {
+            Driver (() => new SqrtExtractionUInt(dataWidth), backendName) {
+                c => new SqrtExtractionUIntUnitTester(c)
+            }should be (true)
+        }
+    }
+
+    "Basic test using Driver.execute" should "be used as an alternative way to run specification" in {
+        iotesters.Driver.execute (Array(), () => new SqrtExtractionUInt(dataWidth)) {
+            c => new SqrtExtractionUIntUnitTester(c)
+        } should be (true)
+    }
+
+}
+
+
+class VecExampleUnitTester (c: VecExample) extends PeekPokeTester(c) {
+    val ve = c
+    reset(10)
+    expect (ve.io.out, 8)
+}
+
+class VecExampleTester extends ChiselFlatSpec {
+    private val backendNames = if (firrtl.FileUtils.isCommandAvailable (Seq ("verilator", "--version"))) {
+        Array ("firrtl", "verilator")
+    } else {
+        Array ("firrtl")
+    }
+    for (backendName <- backendNames) {
+        "VecExample" should s"be an example" in {
+            Driver (() => new VecExample, backendName) {
+                c => new VecExampleUnitTester(c)
             }
         }
     }
 
-    "running with --is-verbose" should "show more about what's going on in your tester" in {
-        iotesters.Driver.execute (Array("--is-verbose"), () => new SqrtUInt(dataWidth)) {
-            c => new SqrtUIntUnitTester(c)
-        }should be (true)
+    "Basic test using Driver.execute" should "be used as an alternative way to run specification" in {
+        iotesters.Driver.execute (Array(), () => new VecExample) {
+            c => new VecExampleUnitTester(c)
+        } should be (true)
     }
-    */
+
 }
