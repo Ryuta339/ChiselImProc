@@ -395,6 +395,18 @@ class ZeroPadding (data_width: Int, width: Int, height: Int) extends ImageFilter
     }
 }
 
+class HystThreshold (data_width: Int, width: Int, height: Int) extends ImageFilter(data_width, width, height) {
+    val HTHR = 80.U
+    val LTHR = 20.U
+    when (dataReg < LTHR) {
+        io.deq.bits := 0.U
+    }.elsewhen (dataReg > HTHR) {
+        io.deq.bits := 0xFF.U
+    }.otherwise {
+        io.deq.bits := 1.U
+    }
+}
+
 // Top module class
 class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extends FifoAXIS (UInt(data_width.W),  depth) {
 
@@ -415,7 +427,7 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
         // Zero padding at boundary pixel
         Module (new ZeroPadding (data_width/3, width, height)),
         // Hysteresis threshold
-        Module (new NothingFilter (data_width/3, width, height)),
+        Module (new HystThreshold (data_width/3, width, height)),
         // Comparison operation
         Module (new NothingFilter (data_width/3, width, height)),
         // GrayScale image -> RGB
