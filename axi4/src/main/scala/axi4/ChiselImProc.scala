@@ -2,6 +2,8 @@ package axi4
 
 import chisel3._
 import chisel3.util._
+import chisel3.util.experimental._
+import javax.net.ssl.SSLEngineResult.Status
 
 /** Gradient Direction **/
 trait GradDirDefinition {
@@ -16,8 +18,8 @@ class GradPix extends Bundle {
 class MulAdd (data_width: Int, num: Int) extends Module {
     val io = IO(new Bundle {
         val a = Input (Vec(num, UInt(data_width.W)))
-        val b = Input (Vec(num, UInt((2*data_width).W)))
-        val output = Output (UInt (32.W))
+        val b = Input (Vec(num, UInt(data_width.W)))
+        val output = Output (UInt ((2*data_width).W))
     })
 
     var i = 0
@@ -29,93 +31,115 @@ class MulAdd (data_width: Int, num: Int) extends Module {
     io.output := tmp    
 }
 
-abstract class AbstractImageFilter (data_width: Int, width: Int, height: Int) extends Module {
-    val io = IO (new FifoAXIStreamIO (UInt (data_width.W)))
+class SMulAdd (data_width: Int, num: Int) extends Module {
+    val io = IO(new Bundle{
+        val a = Input (Vec (num, SInt(data_width.W)))
+        val b = Input (Vec (num, SInt(data_width.W)))
+        val output = Output (SInt ((2*data_width).W))
+    })
 
-    // default output
-    io.deq.last := false.B
-    io.deq.user := false.B
+    var i = 0
+    var tmp = 0.S ((2*data_width).W)
+    while (i < num) {
+        tmp += io.a(i) * io.b(i)
+        i += 1
+    }
+    io.output := tmp
 }
 
-// ImageFilter is a base class for each filter
-// Each filter extends this class.
-// The result of a filter should be written on io.deq.bits
-class ImageFilter (data_width: Int, width: Int, height: Int) extends AbstractImageFilter(data_width,width, height) {
-
+// set status
+abstract class StatusFifo[T <: Data, U <: Data] (private val genEnq: T, private val genDeq: U, data_width: Int) extends Module {
 
     // define states
     // block state is not used now
     val empty :: one :: two :: block :: Nil = Enum (4)
     val stateReg = RegInit (empty)
     // val dataReg = RegInit (0.U(data_width.W))
-    val dataReg = Reg (UInt(data_width.W))
+    val dataReg = Reg (genEnq)
     // val shadowReg = RegInit (0.U(data_width.W))
-    val shadowReg = Reg (UInt(data_width.W))
+    val shadowReg = Reg (genEnq)
     val userReg = Reg (Bool())
     val shadowUserReg = Reg (Bool())
     val lastReg = Reg (Bool())
     val shadowLastReg = Reg (Bool())
 
-    switch (stateReg) {
-        is (empty) {
-            userReg := io.enq.user
-            when (io.enq.valid) {
-                stateReg := one
-                dataReg := io.enq.bits
-                lastReg := io.enq.last
+
+    def setStatus (io: FifoAXIStreamDIO[T,U]): Unit = {
+       switch (stateReg) {
+            is (empty) {
+                userReg := io.enq.user
+                when (io.enq.valid) {
+                    stateReg := one
+                    dataReg := io.enq.bits
+                    lastReg := io.enq.last
+                }
             }
-        }
-        is (one) {
-            when (io.deq.ready && !io.enq.valid) {
+            is (one) {
+                when (io.deq.ready && !io.enq.valid) {
+                    stateReg := empty
+                    userReg := io.enq.user
+                }.elsewhen (io.deq.ready && io.enq.valid) {
+                    stateReg := one
+                    dataReg := io.enq.bits
+                    userReg := io.enq.user
+                    lastReg := io.enq.last
+                }.elsewhen (!io.deq.ready && io.enq.valid) {
+                    stateReg := two
+                    shadowReg := io.enq.bits
+                    shadowUserReg := io.enq.user
+                    shadowLastReg := io.enq.last
+                }
+            }
+            is (two) {
+                when (io.deq.ready) {
+                    dataReg := shadowReg
+                    userReg := shadowUserReg
+                    lastReg := shadowLastReg
+                    stateReg := one
+                }
+            }
+            is (block) {
                 stateReg := empty
-                userReg := io.enq.user
-            }.elsewhen (io.deq.ready && io.enq.valid) {
-                stateReg := one
-                dataReg := io.enq.bits
-                userReg := io.enq.user
-                lastReg := io.enq.last
-            }.elsewhen (!io.deq.ready && io.enq.valid) {
-                stateReg := two
-                shadowReg := io.enq.bits
-                shadowUserReg := io.enq.user
-                shadowLastReg := io.enq.last
             }
         }
-        is (two) {
-            when (io.deq.ready) {
-                dataReg := shadowReg
-                userReg := shadowUserReg
-                lastReg := shadowLastReg
-                stateReg := one
-            }
-        }
-        is (block) {
-            stateReg := empty
-        }
+        
+
+        io.deq.last := lastReg
+        io.deq.user := userReg
+
+        io.enq.ready := (stateReg === empty || stateReg === one || stateReg === block)
+        io.deq.valid := (stateReg === one || stateReg === two)
+
+        /*
+        io.state_reg := stateReg
+        io.shadow_reg := shadowReg
+        io.shadow_user := shadowUserReg
+        io.shadow_last := shadowLastReg
+        io.shadow_reg := dataReg
+        io.shadow_user := userReg
+        io.shadow_last := lastReg
+        */
+
+        // io.enq <> io.deq
+        // io.deq.last := io.enq.last
+        // io.deq.user := io.enq.user
+        // io.deq.bits := io.enq.bits
     }
-    
-
-    io.deq.last := lastReg
-    io.deq.user := userReg
-
-    io.enq.ready := (stateReg === empty || stateReg === one || stateReg === block)
-    io.deq.valid := (stateReg === one || stateReg === two)
-
-    io.state_reg := stateReg
-    io.shadow_reg := shadowReg
-    io.shadow_user := shadowUserReg
-    io.shadow_last := shadowLastReg
-    /*
-    io.shadow_reg := dataReg
-    io.shadow_user := userReg
-    io.shadow_last := lastReg
-    */
-
-    // io.enq <> io.deq
-    // io.deq.last := io.enq.last
-    // io.deq.user := io.enq.user
-    // io.deq.bits := io.enq.bits
 }
+
+// ImageFilter is a base class for each filter
+// Each filter extends this class.
+// The result of a filter should be written on io.deq.bits
+class ImageFilter (data_width: Int, width: Int, height: Int) extends StatusFifo(UInt(data_width.W), UInt(data_width.W), data_width) {
+    val io = IO (new FifoAXIStreamIO (UInt (data_width.W)))
+
+    // default output
+    io.deq.last := false.B
+    io.deq.user := false.B
+
+    setStatus(io)
+}
+
 
 // This filter does Nothing
 class NothingFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
@@ -173,10 +197,10 @@ class GaussianBlurFilter (data_width: Int, width: Int, height: Int) extends Imag
     lineBuffer (0) := Mux (sel, dataReg, lineBuffer(0))
 
     for (yw <- 0 until KERNEL_SIZE; xw <- 0 until (KERNEL_SIZE-1)) {
-        windowBuffer (xw+yw*KERNEL_SIZE) := windowBuffer (xw+yw*KERNEL_SIZE+1)
+        windowBuffer (xw+yw*KERNEL_SIZE) := Mux (sel, windowBuffer (xw+yw*KERNEL_SIZE+1), windowBuffer(xw+yw*KERNEL_SIZE))
     }
     for (yw <- 0 until KERNEL_SIZE) {
-        windowBuffer ((yw+1)*KERNEL_SIZE-1) := lineBuffer ((yw+1)*width-1)
+        windowBuffer ((yw+1)*KERNEL_SIZE-1) := Mux (sel, lineBuffer ((yw+1)*width-1), windowBuffer((yw+1)*KERNEL_SIZE-1))
     }
 
     private val ma = Module (new MulAdd (data_width, KERNEL_SIZE*KERNEL_SIZE))
@@ -187,67 +211,188 @@ class GaussianBlurFilter (data_width: Int, width: Int, height: Int) extends Imag
     io.deq.bits := ma.io.output >> 8
 }
 
-class SobelFilter (data_width: Int, width: Int, height: Int) extends Module with GradDirDefinition {
-    val io = IO (new Bundle{
-        val enq = AXIStreamSlaveIF (UInt(data_width.W))
-        val deq = AXIStreamMasterIF (new GradPix)
-    })
+class SobelFilter (data_width: Int, width: Int, height: Int) 
+        extends StatusFifo(UInt(data_width.W), new GradPix, data_width) with GradDirDefinition {
+    val io = IO (
+        new FifoAXIStreamDIO(UInt(data_width.W), new GradPix)
+    )
 
-    /*
     val KERNEL_SIZE = 3
     // 3x3 horizontal sobel kernel
-    val H_SOBEL_KERNEL = Reg (Vec KERNEL_SIZE*KERNEL_SIZE, SInt(data_width.W))
+    val H_SOBEL_KERNEL = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt(16.W)))
     // 3x3 vertical sobel kernel
-    val V_SOBEL_KERNEL = Reg (Vec KERNEL_SIZE*KERNEL_SIZE, SInt(data_width.W))
+    val V_SOBEL_KERNEL = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt(16.W)))
     H_SOBEL_KERNEL := Seq (
         1.S,  0.S, -1.S,
         2.S,  0.S, -2.S,
         1.S,  0.S, -1.S,
     )
-    V_SOBEL_KERNEL = Seq (
+    V_SOBEL_KERNEL := Seq (
          1.S,  2.S,  1.S,
          0.S,  0.S,  0.S,
         -1.S, -2.S, -1.S,
     )
 
     val lineBuffer = Reg (Vec (width*KERNEL_SIZE, UInt(data_width.W)))    
-    val windowBuffer = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, UInt (data_width.W)))
+    val windowBuffer = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, SInt ((2*data_width).W)))
     val sel = Wire (Bool())
 
-    sel := (stateReg===one || stateReg==two) && io.deq.ready
+    setStatus (io)
+
+    sel := (stateReg===one || stateReg===two) && io.deq.ready
 
     for (i <- 0 until width*KERNEL_SIZE-1) {
-        lineBuffer(i+1) := Mux (Sel, lineBuffer(i), lineBuffer(i+1))
+        lineBuffer(i+1) := Mux (sel, lineBuffer(i), lineBuffer(i+1))
     }
     lineBuffer(0) := Mux (sel, dataReg, lineBuffer(0))
 
     for (yw <- 0 until KERNEL_SIZE; xw <- 0 until (KERNEL_SIZE-1)) {
-        windowBuffer (xw+yw*KERNEL_SIZE) := windowBuffer (xw+yw*KERNEL_SIZE+1)
+        windowBuffer (xw+yw*KERNEL_SIZE) := Mux (sel, windowBuffer (xw+yw*KERNEL_SIZE+1), windowBuffer (xw+yw*KERNEL_SIZE))
     }
     for (yw <- 0 until KERNEL_SIZE) {
-        windowBuffer ((yw+1)*KERNEL_SIZE-1) := lineBuffer ((yw+1)*width-1)
+        windowBuffer ((yw+1)*KERNEL_SIZE-1) := Mux (sel, (0.U((2*data_width).W)+lineBuffer ((yw+1)*width-1)).asSInt, windowBuffer ((yw+1)*KERNEL_SIZE-1))
     }
 
-    private val hma = Module (new MulAdd (data_width, KERNEL_SIZE*KERNEL_SIZE))
-    private val vma = Module (new MulAdd (data_width, KERNEL_SIZE*KERNEL_SIZE))
-    */
+    private val hma = Module (new SMulAdd (2*data_width, KERNEL_SIZE*KERNEL_SIZE))
+    private val vma = Module (new SMulAdd (2*data_width, KERNEL_SIZE*KERNEL_SIZE))
 
+    hma.io.a := H_SOBEL_KERNEL
+    hma.io.b := windowBuffer
+    vma.io.a := V_SOBEL_KERNEL
+    vma.io.b := windowBuffer
+
+    val pix_euc = Wire(UInt((4*data_width).W))
+    val pix_sqrt_euc = Wire(UInt((2*data_width).W))
+    val pix_sobel = Wire (UInt((2*data_width).W))
+    pix_euc := (hma.io.output*hma.io.output + vma.io.output*vma.io.output).asUInt
+
+    private val sqrtuint = Module (new SqrtExtractionUInt (2*data_width))
+    sqrtuint.io.z := pix_euc
+    pix_sqrt_euc := sqrtuint.io.q
+
+    pix_sobel := Mux (pix_sqrt_euc > 0xFF.U, 0xFF.U, pix_sqrt_euc)
+
+    BoringUtils.addSource (pix_euc, "uniqueId2")
+    BoringUtils.addSource (pix_sqrt_euc, "uniqueId")
+
+    val t_int = Wire (SInt((4*data_width).W))
+    t_int := Mux (hma.io.output === 0.S, 0x7FFFFFFF.S, vma.io.output * 0x100.S / hma.io.output)
+
+    val grad_sobel = Wire (UInt(2.W))
+    when (-618.S < t_int && t_int <= -106.S) {
+        grad_sobel := dir_top_left
+    }.elsewhen (-106.S < t_int && t_int <= 106.S) {
+        grad_sobel := dir_right
+    }.elsewhen (106.S < t_int && t_int <= 618.S) {
+        grad_sobel := dir_top_right
+    }.otherwise {
+        grad_sobel := dir_top
+    }
+
+    io.deq.bits.grad_dir := grad_sobel
+    io.deq.bits.value := pix_sobel
 }
 
-class NonMaxSupression (data_width: Int, width: Int, height: Int) extends Module with GradDirDefinition {
-    val io = IO (new Bundle {
-        val enq = AXIStreamSlaveIF (new GradPix)
-        val deq = AXIStreamSlaveIF (UInt(data_width.W))
-    })    
+class NonMaxSupression (data_width: Int, width: Int, height: Int)
+        extends StatusFifo(new GradPix, UInt(data_width.W), data_width) with GradDirDefinition {
+    val io = IO (new FifoAXIStreamDIO(new GradPix, UInt(data_width.W)))
+
+   val WINDOW_SIZE = 3
+   val WINDOW_CENTER_IDX = WINDOW_SIZE*WINDOW_SIZE/2
+  
+   val lineBuffer = Reg (Vec (width*WINDOW_SIZE, new GradPix))
+   val windowBuffer = Reg (Vec (WINDOW_SIZE*WINDOW_SIZE, new GradPix))
+   val sel = Wire (Bool())
+
+   setStatus (io)
+
+   sel := (stateReg===one | stateReg===two) && io.deq.ready
+
+   for (i <- 0 until width*WINDOW_SIZE-1) {
+       lineBuffer(i+1) := Mux (sel, lineBuffer(i), lineBuffer(i+1))
+   }
+   lineBuffer(0) := Mux (sel, dataReg, lineBuffer(0))
+
+   for (yw <- 0 until WINDOW_SIZE; xw <- 0 until (WINDOW_SIZE-1)) {
+       windowBuffer (xw+yw*WINDOW_SIZE) := Mux (sel, windowBuffer(xw+yw*WINDOW_SIZE+1), windowBuffer (xw+yw*WINDOW_SIZE))
+   }
+   for (yw <- 0 until WINDOW_SIZE) {
+       windowBuffer ((yw+1)*WINDOW_SIZE-1) := Mux (sel, lineBuffer((yw+1)*width-1), windowBuffer ((yw+1)*WINDOW_SIZE-1))
+   }
+
+   val nms = Wire (new GradPix)
+   val vnms = WireInit (0.U (data_width.W))
+   nms := windowBuffer(WINDOW_CENTER_IDX)
+
+   switch (nms.grad_dir) {
+       is (dir_right) {
+           // grad 0 -> left. right
+            when (nms.value < windowBuffer(WINDOW_CENTER_IDX-1).value || nms.value < windowBuffer(WINDOW_CENTER_IDX+1).value) {
+                vnms := 0.U
+            }.otherwise {
+                vnms := nms.value
+            }
+       }
+       is (dir_top_right) {
+           // grad 45 -> upper left, bottom right
+           when (nms.value < windowBuffer(0).value || nms.value < windowBuffer(WINDOW_SIZE*WINDOW_SIZE-1).value) {
+               vnms := 0.U
+           }.otherwise {
+               vnms := nms.value
+           }
+       }
+       is (dir_top) {
+           // grad 90 -> upper, bottom
+           when (nms.value < windowBuffer(WINDOW_CENTER_IDX-WINDOW_SIZE).value || nms.value < windowBuffer(WINDOW_CENTER_IDX+WINDOW_SIZE).value) {
+               vnms := 0.U
+           }.otherwise {
+               vnms := nms.value
+           }
+       }
+       is (dir_top_left) {
+           // grad 135 -> bottom left, upper right
+           when (nms.value < windowBuffer(WINDOW_SIZE-1).value || nms.value < windowBuffer(WINDOW_SIZE*(WINDOW_SIZE-1)).value) {
+               vnms := 0.U
+           }.otherwise {
+               vnms := nms.value
+           }
+       }
+   }
+
+   io.deq.bits := vnms
 }
 
-class SobelAndNonMaxSupressionFilter (data_width: Int, width: Int, height: Int) extends AbstractImageFilter (data_width, width, height) {
+class SobelAndNonMaxSupressionFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
     val sobel = Module (new SobelFilter (data_width, width, height))
     val nonmaxSupression = Module (new NonMaxSupression (data_width, width, height))
 
     io.enq <> sobel.io.enq
-    sobel.io.deq <> nonmaxSupression.io.deq
+    sobel.io.deq <> nonmaxSupression.io.enq
     nonmaxSupression.io.deq <> io.deq
+}
+
+class ZeroPadding (data_width: Int, width: Int, height: Int) extends ImageFilter(data_width, width, height) {
+    val PADDING_SIZE = 5.U
+
+    val xcounter = Reg(UInt((log2Ceil(width)+1).W))
+    val ycounter = Reg(UInt((log2Ceil(height)+1).W))
+
+    when (userReg) {
+        xcounter := 0.U
+        ycounter := 0.U
+    }.elsewhen (lastReg && (stateReg === one || stateReg === two) && io.deq.ready) {
+        xcounter := 0.U
+        ycounter := ycounter + 1.U
+    }.elsewhen ((stateReg === one || stateReg === two) && io.deq.ready) {
+        xcounter := xcounter + 1.U
+    }
+
+    when (PADDING_SIZE < xcounter && xcounter < width.U-PADDING_SIZE &&
+            PADDING_SIZE < ycounter && ycounter < height.U-PADDING_SIZE) {
+        io.deq.bits := dataReg
+    }.otherwise {
+        io.deq.bits := 0.U
+    }
 }
 
 // Top module class
@@ -263,11 +408,12 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
         Module (new GaussianBlurFilter (data_width/3, width, height)),
         // Module (new NothingFilter (data_width/3, width, height)),
         // Sobel filter
-        Module (new NothingFilter (data_width/3, width, height)),
+        Module (new SobelAndNonMaxSupressionFilter (data_width/3, width, height)),
+        // Module (new NothingFilter (data_width/3, width, height)),
         // Non-Maximum suppression
         Module (new NothingFilter (data_width/3, width, height)),
         // Zero padding at boundary pixel
-        Module (new NothingFilter (data_width/3, width, height)),
+        Module (new ZeroPadding (data_width/3, width, height)),
         // Hysteresis threshold
         Module (new NothingFilter (data_width/3, width, height)),
         // Comparison operation
@@ -288,16 +434,22 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
     // Connect deq of this module and that of last filter
     io.deq <> buffers(depth-1).io.deq
     // Connect shadow registers for debug
+    /*
     io.state_reg := buffers(depth-1).io.state_reg
     io.shadow_reg := buffers(depth-1).io.shadow_reg
     io.shadow_user := buffers(depth-1).io.shadow_user
     io.shadow_last := buffers(depth-1).io.shadow_last
 
-    /*
     io.deq <> io.enq
     io.state_reg := 0.U(2.W)
     io.shadow_reg := 0.U(data_width.U)
     io.shadow_user := false.B
     io.shadow_last := false.B
     */ 
+    val dWire = WireInit (0.U(32.W))
+    val dWire2 = WireInit (0.U(32.W))
+    BoringUtils.addSink (dWire, "uniqueId")
+    BoringUtils.addSink (dWire2, "uniqueId2")
+    io.dport := dWire
+    io.dport2 := dWire2
 }
