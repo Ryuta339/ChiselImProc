@@ -407,6 +407,44 @@ class HystThreshold (data_width: Int, width: Int, height: Int) extends ImageFilt
     }
 }
 
+class HystThresholdComp (data_width: Int, width: Int, height: Int) extends ImageFilter(data_width, width, height) {
+    val WINDOW_SIZE = 3
+    val WINDOW_CENTER_IDX = WINDOW_SIZE*WINDOW_SIZE/2
+  
+   val lineBuffer = Reg (Vec (width*WINDOW_SIZE, UInt(data_width.W)))
+   val windowBuffer = Reg (Vec (WINDOW_SIZE*WINDOW_SIZE, UInt(data_width.W)))
+   val sel = Wire (Bool())
+
+   setStatus (io)
+
+   sel := (stateReg===one | stateReg===two) && io.deq.ready
+
+   for (i <- 0 until width*WINDOW_SIZE-1) {
+       lineBuffer(i+1) := Mux (sel, lineBuffer(i), lineBuffer(i+1))
+   }
+   lineBuffer(0) := Mux (sel, dataReg, lineBuffer(0))
+
+   for (yw <- 0 until WINDOW_SIZE; xw <- 0 until (WINDOW_SIZE-1)) {
+       windowBuffer (xw+yw*WINDOW_SIZE) := Mux (sel, windowBuffer(xw+yw*WINDOW_SIZE+1), windowBuffer (xw+yw*WINDOW_SIZE))
+   }
+   for (yw <- 0 until WINDOW_SIZE) {
+       windowBuffer ((yw+1)*WINDOW_SIZE-1) := Mux (sel, lineBuffer((yw+1)*width-1), windowBuffer ((yw+1)*WINDOW_SIZE-1))
+   }
+
+    val pix_hyst = Wire (UInt(data_width.W)) 
+    when (windowBuffer(WINDOW_CENTER_IDX) =/= 0.U){
+        val flag = Wire(Vec (WINDOW_SIZE*WINDOW_SIZE, Bool()))
+        flag(0) := true.B
+        for (i <- 0 until WINDOW_SIZE*WINDOW_SIZE-1) {
+            flag(i+1) := flag(i) && (windowBuffer(i) =/= 0xFF.U)
+        }
+        pix_hyst := Mux (flag(WINDOW_SIZE*WINDOW_SIZE-1), 0.U, 0xFF.U)
+    }.otherwise {
+        pix_hyst := 0.U
+    }
+    io.deq.bits := pix_hyst
+}
+
 // Top module class
 class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extends FifoAXIS (UInt(data_width.W),  depth) {
 
@@ -429,7 +467,7 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
         // Hysteresis threshold
         Module (new HystThreshold (data_width/3, width, height)),
         // Comparison operation
-        Module (new NothingFilter (data_width/3, width, height)),
+        Module (new HystThresholdComp (data_width/3, width, height)),
         // GrayScale image -> RGB
         Module (new Gray2RGBFilter (data_width, width, height)),
     )
