@@ -371,6 +371,30 @@ class SobelAndNonMaxSupressionFilter (data_width: Int, width: Int, height: Int) 
     nonmaxSupression.io.deq <> io.deq
 }
 
+class ZeroPadding (data_width: Int, width: Int, height: Int) extends ImageFilter(data_width, width, height) {
+    val PADDING_SIZE = 5.U
+
+    val xcounter = Reg(UInt((log2Ceil(width)+1).W))
+    val ycounter = Reg(UInt((log2Ceil(height)+1).W))
+
+    when (userReg) {
+        xcounter := 0.U
+        ycounter := 0.U
+    }.elsewhen (lastReg && (stateReg === one || stateReg === two) && io.deq.ready) {
+        xcounter := 0.U
+        ycounter := ycounter + 1.U
+    }.elsewhen ((stateReg === one || stateReg === two) && io.deq.ready) {
+        xcounter := xcounter + 1.U
+    }
+
+    when (PADDING_SIZE < xcounter && xcounter < width.U-PADDING_SIZE &&
+            PADDING_SIZE < ycounter && ycounter < height.U-PADDING_SIZE) {
+        io.deq.bits := dataReg
+    }.otherwise {
+        io.deq.bits := 0.U
+    }
+}
+
 // Top module class
 class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extends FifoAXIS (UInt(data_width.W),  depth) {
 
@@ -389,7 +413,7 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
         // Non-Maximum suppression
         Module (new NothingFilter (data_width/3, width, height)),
         // Zero padding at boundary pixel
-        Module (new NothingFilter (data_width/3, width, height)),
+        Module (new ZeroPadding (data_width/3, width, height)),
         // Hysteresis threshold
         Module (new NothingFilter (data_width/3, width, height)),
         // Comparison operation
