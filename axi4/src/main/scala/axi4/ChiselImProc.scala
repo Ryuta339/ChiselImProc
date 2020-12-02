@@ -226,6 +226,11 @@ class GaussianBlurFilter (data_width: Int, width: Int, height: Int) extends Imag
 
     private val ma = Module (new MulAdd (data_width, KERNEL_SIZE*KERNEL_SIZE))
 
+    BoringUtils.addSource (ma.io.output, "tdata")
+    BoringUtils.addSource (Cat(windowBuffer), "tdata2")
+    BoringUtils.addSource (io.deq.valid, "tvalid")
+    BoringUtils.addSource (io.deq.ready, "tready")
+
     ma.io.a := GAUSS_KERNEL
     ma.io.b := windowBuffer
 
@@ -518,8 +523,20 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
     */ 
     val dWire = WireInit (0.U(32.W))
     val dWire2 = WireInit (0.U(32.W))
+    val tvalid = WireInit (false.B)
+    val tready = WireInit (false.B)
+    val tdata = WireInit (0.U(16.W))
+    val tdata2 = WireInit (0.U((8*25).W))
     BoringUtils.addSink (dWire, "uniqueId")
     BoringUtils.addSink (dWire2, "uniqueId2")
+    BoringUtils.addSink (tvalid, "tvalid")
+    BoringUtils.addSink (tready, "tready")
+    BoringUtils.addSink (tdata, "tdata")
+    BoringUtils.addSink (tdata2, "tdata2")
     io.dport := dWire
     io.dport2 := dWire2
+    io.tdata := tdata
+    io.tvalid := tvalid
+    io.tready := tready
+    io.tdata2 := tdata2
 }
