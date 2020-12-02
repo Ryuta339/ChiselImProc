@@ -461,7 +461,6 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
         Module (new SobelAndNonMaxSupressionFilter (data_width/3, width, height)),
         // Module (new NothingFilter (data_width/3, width, height)),
         // Non-Maximum suppression
-        Module (new NothingFilter (data_width/3, width, height)),
         // Zero padding at boundary pixel
         Module (new ZeroPadding (data_width/3, width, height)),
         // Hysteresis threshold
