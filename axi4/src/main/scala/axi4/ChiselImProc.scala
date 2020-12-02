@@ -159,14 +159,35 @@ class BlueFilter (data_width: Int, width: Int, height: Int) extends ImageFilter 
 class RGB2GrayFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
     val pixGray = Wire (UInt(32.W))
     val rolled = Wire (UInt(16.W))
+
+    // for debug
+    val xcounter = Reg(UInt((log2Ceil(width)+1).W))
+    val ycounter = Reg(UInt((log2Ceil(height)+1).W))
+
+    when (userReg) {
+        xcounter := 0.U
+        ycounter := 0.U
+    }.elsewhen (lastReg && (stateReg === one || stateReg === two) && io.deq.ready) {
+        xcounter := 0.U
+        ycounter := ycounter + 1.U
+    }.elsewhen ((stateReg === one || stateReg === two) && io.deq.ready) {
+        xcounter := xcounter + 1.U
+    }
+    BoringUtils.addSource (xcounter, "uniqueId")
+    BoringUtils.addSource (ycounter, "uniqueId2")
+
     
     pixGray := ((9437.U * (dataReg & 0x0000FF.U) +
             38469.U * ((dataReg & 0x00FF00.U) >> 8.U) +
             19595.U * ((dataReg & 0xFF0000.U) >> 16.U)))
 
     rolled := (pixGray >> 16.U)
-    io.deq.bits := Mux (rolled > 0xFF.U, 0xFF.U, rolled)
+    // io.deq.bits := Mux (rolled > 0xFF.U, 0xFF.U, rolled)
 
+    val xblock = width / 8
+    val yblock = height / 8
+
+    io.deq.bits := xcounter / xblock.U * 2.U + ycounter / yblock.U * 16.U
 }
 
 // This filter converts 256 gray scale image into 256x256x256 gray scale image
@@ -271,9 +292,6 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
     pix_sqrt_euc := sqrtuint.io.q
 
     pix_sobel := Mux (pix_sqrt_euc > 0xFF.U, 0xFF.U, pix_sqrt_euc)
-
-    BoringUtils.addSource (pix_euc, "uniqueId2")
-    BoringUtils.addSource (pix_sqrt_euc, "uniqueId")
 
     val t_int = Wire (SInt((4*data_width).W))
     t_int := Mux (hma.io.output === 0.S, 0x7FFFFFFF.S, vma.io.output * 0x100.S / hma.io.output)
@@ -458,15 +476,18 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
         Module (new GaussianBlurFilter (data_width/3, width, height)),
         // Module (new NothingFilter (data_width/3, width, height)),
         // Sobel filter
-        Module (new SobelAndNonMaxSupressionFilter (data_width/3, width, height)),
-        // Module (new NothingFilter (data_width/3, width, height)),
+        // Module (new SobelAndNonMaxSupressionFilter (data_width/3, width, height)),
+        Module (new NothingFilter (data_width/3, width, height)),
         // Non-Maximum suppression
         // Zero padding at boundary pixel
-        Module (new ZeroPadding (data_width/3, width, height)),
+        // Module (new ZeroPadding (data_width/3, width, height)),
+        Module (new NothingFilter (data_width/3, width, height)),
         // Hysteresis threshold
-        Module (new HystThreshold (data_width/3, width, height)),
+        // Module (new HystThreshold (data_width/3, width, height)),
+        Module (new NothingFilter (data_width/3, width, height)),
         // Comparison operation
-        Module (new HystThresholdComp (data_width/3, width, height)),
+        // Module (new HystThresholdComp (data_width/3, width, height)),
+        Module (new NothingFilter (data_width/3, width, height)),
         // GrayScale image -> RGB
         Module (new Gray2RGBFilter (data_width, width, height)),
     )
