@@ -521,9 +521,6 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
         Module (new Gray2RGBFilter (data_width, width, height)),
     )
     
-
-    // val buffers = Array.fill (depth) { Module (new NothingFilter (data_width, width, height)) }
-
     // Connect each filter
     for (i <- 0 until depth-1) {
         buffers (i+1).io.enq <> buffers(i).io.deq
@@ -532,19 +529,8 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
     io.enq <> buffers(0).io.enq
     // Connect deq of this module and that of last filter
     io.deq <> buffers(depth-1).io.deq
-    // Connect shadow registers for debug
-    /*
-    io.state_reg := buffers(depth-1).io.state_reg
-    io.shadow_reg := buffers(depth-1).io.shadow_reg
-    io.shadow_user := buffers(depth-1).io.shadow_user
-    io.shadow_last := buffers(depth-1).io.shadow_last
 
-    io.deq <> io.enq
-    io.state_reg := 0.U(2.W)
-    io.shadow_reg := 0.U(data_width.U)
-    io.shadow_user := false.B
-    io.shadow_last := false.B
-    */ 
+    // for debug
     val dWire = WireInit (0.U(32.W))
     val dWire2 = WireInit (0.U(32.W))
     val tvalid = WireInit (false.B)
