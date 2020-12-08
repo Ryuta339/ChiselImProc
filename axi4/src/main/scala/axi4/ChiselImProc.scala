@@ -188,12 +188,12 @@ class RGB2GrayFilter (data_width: Int, width: Int, height: Int) extends ImageFil
             19595.U * ((dataReg & 0xFF0000.U) >> 16.U)))
 
     rolled := (pixGray >> 16.U)
-    // io.deq.bits := Mux (rolled > 0xFF.U, 0xFF.U, rolled)
+    io.deq.bits := Mux (rolled > 0xFF.U, 0xFF.U, rolled)
 
     val xblock = width / 8
     val yblock = height / 8
 
-    io.deq.bits := xcounter / xblock.U * 2.U + ycounter / yblock.U * 16.U
+    // io.deq.bits := xcounter / xblock.U * 2.U + ycounter / yblock.U * 16.U
 }
 
 // This filter converts 256 gray scale image into 256x256x256 color but gray scale image
@@ -201,9 +201,9 @@ class Gray2RGBFilter (data_width: Int, width: Int, height: Int) extends ImageFil
     io.deq.bits := dataReg << 16.U | dataReg << 8.U | dataReg
 }
 
-// This filter is Gaussian blur
-// In the original canny-edge-detection, the gaussian kernel is 5x5
-// 
+// This filter is Gaussian blur.
+// In the original canny-edge-detection of HLS, the gaussian kernel is 5x5.
+// To deal with the delay, this gaussian kernel is 3x3.
 class GaussianBlurFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
     // val KERNEL_SIZE = 5
     val KERNEL_SIZE = 3
@@ -254,6 +254,7 @@ class GaussianBlurFilter (data_width: Int, width: Int, height: Int) extends Imag
     io.deq.bits := ma.io.output >> 4
 }
 
+// This is a sobel filter (first differential filter along to x and y axis)
 class SobelFilter (data_width: Int, width: Int, height: Int) 
         extends StatusFifo(UInt(data_width.W), new GradPix, data_width) with GradDirDefinition {
     val io = IO (
@@ -334,6 +335,7 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
     io.deq.bits.value := pix_sobel
 }
 
+// Non Max Supression filter.
 class NonMaxSupression (data_width: Int, width: Int, height: Int)
         extends StatusFifo(new GradPix, UInt(data_width.W), data_width) with GradDirDefinition {
     val io = IO (new FifoAXIStreamDIO(new GradPix, UInt(data_width.W)))
@@ -403,6 +405,8 @@ class NonMaxSupression (data_width: Int, width: Int, height: Int)
    io.deq.bits := vnms
 }
 
+// Output of Sobel filter and input of Non-max supression filter are different from 8-bit unsigned int data.
+// Thus the connection between these cannot be applied in ChiselImProc module.
 class SobelAndNonMaxSupressionFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
     val sobel = Module (new SobelFilter (data_width, width, height))
     val nonmaxSupression = Module (new NonMaxSupression (data_width, width, height))
@@ -412,6 +416,7 @@ class SobelAndNonMaxSupressionFilter (data_width: Int, width: Int, height: Int) 
     nonmaxSupression.io.deq <> io.deq
 }
 
+// This filter do zero padding.
 class ZeroPadding (data_width: Int, width: Int, height: Int) extends ImageFilter(data_width, width, height) {
     val PADDING_SIZE = 5.U
 
@@ -436,6 +441,7 @@ class ZeroPadding (data_width: Int, width: Int, height: Int) extends ImageFilter
     }
 }
 
+// Threshold filter
 class HystThreshold (data_width: Int, width: Int, height: Int) extends ImageFilter(data_width, width, height) {
     val HTHR = 80.U
     val LTHR = 20.U
