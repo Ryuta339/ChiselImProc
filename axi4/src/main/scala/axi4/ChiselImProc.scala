@@ -24,13 +24,13 @@ class MulAdd (data_width: Int, num: Int) extends Module {
 
     var i = 0
     var tmp = 0.U((2*data_width).W)
-    while (i < num) {
+    val step = 3
+    for (i <- 0 until num by step) {
         var intmp = 0.U((2*data_width).W)
-        for (j <- 0 until 5) {
+        for (j <- 0 until step) {
             intmp += io.a(i+j) * io.b (i+j)
         }
         tmp += intmp
-        i += 5
     }
     io.output := tmp    
 }
@@ -200,14 +200,22 @@ class Gray2RGBFilter (data_width: Int, width: Int, height: Int) extends ImageFil
 }
 
 class GaussianBlurFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
-    val KERNEL_SIZE = 5
+    // val KERNEL_SIZE = 5
+    val KERNEL_SIZE = 3
     val GAUSS_KERNEL = Reg (Vec (KERNEL_SIZE*KERNEL_SIZE, UInt(data_width.W)))
+    /*
     GAUSS_KERNEL := Seq (
             1.U,  4.U,  6.U,  4.U, 1.U,
             4.U, 16.U, 24.U, 16.U, 4.U,
             6.U, 24.U, 36.U, 24.U, 6.U,
             4.U, 16.U, 24.U, 16.U, 4.U,
             1.U,  4.U,  6.U,  4.U, 1.U,
+    )
+    */
+    GAUSS_KERNEL := Seq (
+        1.U, 2.U, 1.U,
+        2.U, 4.U, 2.U,
+        1.U, 2.U, 1.U,
     )
 
     val lineBuffer = Reg (Vec (width*KERNEL_SIZE, UInt(data_width.W)))    
@@ -238,7 +246,7 @@ class GaussianBlurFilter (data_width: Int, width: Int, height: Int) extends Imag
     ma.io.a := GAUSS_KERNEL
     ma.io.b := windowBuffer
 
-    io.deq.bits := ma.io.output >> 8
+    io.deq.bits := ma.io.output >> 4
 }
 
 class SobelFilter (data_width: Int, width: Int, height: Int) 

@@ -11439,3 +11439,16 @@ where tpe = (data_width/3, width, height)
 12 08, 2020 11:20:46 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
 åxçê: Unmatched cancel notification for request id 579
 2020.12.08 11:21:12 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+12 08, 2020 11:49:08 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 684
+12 08, 2020 11:53:27 åﬂëO org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+èÓïÒ: Unsupported notification method: $/setTraceNotification
+12 08, 2020 1:24:13 åﬂå„ org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 1075
+2020.12.08 13:24:26 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.12.08 13:24:32 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.12.08 13:24:57 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+12 08, 2020 1:25:07 åﬂå„ org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 1302
+2020.12.08 13:25:22 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.12.08 13:25:29 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
