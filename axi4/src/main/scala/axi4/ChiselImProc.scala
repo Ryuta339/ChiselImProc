@@ -15,6 +15,7 @@ class GradPix extends Bundle {
     val value = UInt (8.W)
 }
 
+// Unsigned multiplication and addition
 class MulAdd (data_width: Int, num: Int) extends Module {
     val io = IO(new Bundle {
         val a = Input (Vec(num, UInt(data_width.W)))
@@ -24,7 +25,7 @@ class MulAdd (data_width: Int, num: Int) extends Module {
 
     var i = 0
     var tmp = 0.U((2*data_width).W)
-    val step = 3
+    val step = 3        // Have to change this when num is not 3
     for (i <- 0 until num by step) {
         var intmp = 0.U((2*data_width).W)
         for (j <- 0 until step) {
@@ -35,6 +36,7 @@ class MulAdd (data_width: Int, num: Int) extends Module {
     io.output := tmp    
 }
 
+// Signed multiplication and addition
 class SMulAdd (data_width: Int, num: Int) extends Module {
     val io = IO(new Bundle{
         val a = Input (Vec (num, SInt(data_width.W)))
@@ -194,11 +196,14 @@ class RGB2GrayFilter (data_width: Int, width: Int, height: Int) extends ImageFil
     io.deq.bits := xcounter / xblock.U * 2.U + ycounter / yblock.U * 16.U
 }
 
-// This filter converts 256 gray scale image into 256x256x256 gray scale image
+// This filter converts 256 gray scale image into 256x256x256 color but gray scale image
 class Gray2RGBFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
     io.deq.bits := dataReg << 16.U | dataReg << 8.U | dataReg
 }
 
+// This filter is Gaussian blur
+// In the original canny-edge-detection, the gaussian kernel is 5x5
+// 
 class GaussianBlurFilter (data_width: Int, width: Int, height: Int) extends ImageFilter (data_width, width, height) {
     // val KERNEL_SIZE = 5
     val KERNEL_SIZE = 3
@@ -304,6 +309,7 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
     val pix_sobel = Wire (UInt((2*data_width).W))
     pix_euc := (hma.io.output*hma.io.output + vma.io.output*vma.io.output).asUInt
 
+    // Calculaate square root
     private val sqrtuint = Module (new SqrtExtractionUInt (2*data_width))
     sqrtuint.io.z := pix_euc
     pix_sqrt_euc := sqrtuint.io.q
@@ -493,18 +499,18 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
         Module (new GaussianBlurFilter (data_width/3, width, height)),
         // Module (new NothingFilter (data_width/3, width, height)),
         // Sobel filter
-        // Module (new SobelAndNonMaxSupressionFilter (data_width/3, width, height)),
-        Module (new NothingFilter (data_width/3, width, height)),
+        Module (new SobelAndNonMaxSupressionFilter (data_width/3, width, height)),
+        // Module (new NothingFilter (data_width/3, width, height)),
         // Non-Maximum suppression
         // Zero padding at boundary pixel
-        // Module (new ZeroPadding (data_width/3, width, height)),
-        Module (new NothingFilter (data_width/3, width, height)),
+        Module (new ZeroPadding (data_width/3, width, height)),
+        // Module (new NothingFilter (data_width/3, width, height)),
         // Hysteresis threshold
-        // Module (new HystThreshold (data_width/3, width, height)),
-        Module (new NothingFilter (data_width/3, width, height)),
+        Module (new HystThreshold (data_width/3, width, height)),
+        // Module (new NothingFilter (data_width/3, width, height)),
         // Comparison operation
-        // Module (new HystThresholdComp (data_width/3, width, height)),
-        Module (new NothingFilter (data_width/3, width, height)),
+        Module (new HystThresholdComp (data_width/3, width, height)),
+        // Module (new NothingFilter (data_width/3, width, height)),
         // GrayScale image -> RGB
         Module (new Gray2RGBFilter (data_width, width, height)),
     )
