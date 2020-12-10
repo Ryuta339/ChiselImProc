@@ -252,6 +252,9 @@ class GaussianBlurFilter (data_width: Int, width: Int, height: Int) extends Imag
     io.deq.bits := ma.io.output >> 4
 }
 
+// data and gradient info along horizontal and vertical axis
+// TODO:
+//      parameterize # of bits of horizontal and vertical 
 class SobelGradient(private val data_width: Int) extends Bundle{
     val data = UInt (data_width.W)
     val horizontal = SInt (32.W)

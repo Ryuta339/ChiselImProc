@@ -11593,3 +11593,194 @@ where tpe = (data_width/3, width, height)
 2020.12.10 11:06:03 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
 2020.12.10 11:06:29 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
 2020.12.10 11:06:57 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.12.10 11:17:37 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\axi4\Axi4Main.scala
+12 10, 2020 11:29:20 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5508
+12 10, 2020 11:29:25 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5560
+12 10, 2020 11:29:34 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5594
+12 10, 2020 11:29:37 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5621
+12 10, 2020 11:29:38 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5633
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5758
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5762
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5763
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5767
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5772
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5774
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5776
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5780
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5781
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5766
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5782
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5786
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5759
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5783
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5785
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5768
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5789
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5793
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5792
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5798
+12 10, 2020 11:30:11 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 5794
+12 10, 2020 11:32:07 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 6122
+12 10, 2020 11:32:07 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 6126
+2020.12.10 11:32:12 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+12 10, 2020 11:32:13 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 6183
+12 10, 2020 11:32:13 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 6185
+12 10, 2020 11:32:13 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 6186
+12 10, 2020 11:32:14 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 6188
+12 10, 2020 11:32:27 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 6256
+12 10, 2020 11:32:46 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 6377
+12 10, 2020 11:33:04 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 6476
+12 10, 2020 11:33:17 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint fallbackResponseError
+èdëÂ: Internal error: org.scalameta.invariants.InvariantFailedException: invariant failed:
+when verifying scala.meta.internal.trees.`package`.XtensionTreesType(tpe).isConstructable
+found that scala.meta.internal.trees.`package`.XtensionTreesType(tpe).isConstructable is false
+where tpe = 2
+java.util.concurrent.CompletionException: org.scalameta.invariants.InvariantFailedException: invariant failed:
+when verifying scala.meta.internal.trees.`package`.XtensionTreesType(tpe).isConstructable
+found that scala.meta.internal.trees.`package`.XtensionTreesType(tpe).isConstructable is false
+where tpe = 2
+	at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:273)
+	at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:280)
+	at java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1592)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: org.scalameta.invariants.InvariantFailedException: invariant failed:
+when verifying scala.meta.internal.trees.`package`.XtensionTreesType(tpe).isConstructable
+found that scala.meta.internal.trees.`package`.XtensionTreesType(tpe).isConstructable is false
+where tpe = 2
+	at org.scalameta.invariants.InvariantFailedException$.raise(Exceptions.scala:19)
+	at scala.meta.Init$.internal$249(Trees.scala:440)
+	at scala.meta.Init$.apply(Trees.scala:439)
+	at scala.meta.internal.parsers.ScalametaParser.$anonfun$initRest$1(ScalametaParser.scala:4300)
+	at scala.meta.internal.parsers.ScalametaParser.atPos(ScalametaParser.scala:688)
+	at scala.meta.internal.parsers.ScalametaParser.autoPos(ScalametaParser.scala:704)
+	at scala.meta.internal.parsers.ScalametaParser.initRest(ScalametaParser.scala:4284)
+	at scala.meta.internal.parsers.ScalametaParser.initInsideTemplate(ScalametaParser.scala:4272)
+	at scala.meta.internal.parsers.ScalametaParser.readInit$1(ScalametaParser.scala:4355)
+	at scala.meta.internal.parsers.ScalametaParser.templateParents(ScalametaParser.scala:4357)
+	at scala.meta.internal.parsers.ScalametaParser.$anonfun$template$1(ScalametaParser.scala:4400)
+	at scala.meta.internal.parsers.ScalametaParser.atPos(ScalametaParser.scala:688)
+	at scala.meta.internal.parsers.ScalametaParser.autoPos(ScalametaParser.scala:704)
+	at scala.meta.internal.parsers.ScalametaParser.template(ScalametaParser.scala:4386)
+	at scala.meta.internal.parsers.ScalametaParser.$anonfun$simpleExpr0$5(ScalametaParser.scala:2634)
+	at scala.meta.internal.parsers.ScalametaParser.atPos(ScalametaParser.scala:688)
+	at scala.meta.internal.parsers.ScalametaParser.$anonfun$simpleExpr0$1(ScalametaParser.scala:2634)
+	at scala.meta.internal.parsers.ScalametaParser.atPosTry(ScalametaParser.scala:697)
+	at scala.meta.internal.parsers.ScalametaParser.autoPosTry(ScalametaParser.scala:707)
+	at scala.meta.internal.parsers.ScalametaParser.simpleExpr0(ScalametaParser.scala:2607)
+	at scala.meta.internal.parsers.ScalametaParser.simpleExpr(ScalametaParser.scala:2605)
+	at scala.meta.internal.parsers.ScalametaParser.prefixExpr(ScalametaParser.scala:2589)
+	at scala.meta.internal.parsers.ScalametaParser.postfixExpr(ScalametaParser.scala:2569)
+	at scala.meta.internal.parsers.ScalametaParser.$anonfun$expr$15(ScalametaParser.scala:2167)
+	at scala.meta.internal.parsers.ScalametaParser.atPos(ScalametaParser.scala:688)
+	at scala.meta.internal.parsers.ScalametaParser.autoPos(ScalametaParser.scala:704)
+	at scala.meta.internal.parsers.ScalametaParser.$anonfun$expr$1(ScalametaParser.scala:2167)
+	at scala.meta.internal.parsers.ScalametaParser.atPos(ScalametaParser.scala:688)
+	at scala.meta.internal.parsers.ScalametaParser.autoPos(ScalametaParser.scala:704)
+	at scala.meta.internal.parsers.ScalametaParser.expr(ScalametaParser.scala:2033)
+	at scala.meta.internal.parsers.ScalametaParser.argumentExpr(ScalametaParser.scala:2778)
+	at scala.meta.internal.parsers.ScalametaParser.$anonfun$argumentExprsWithUsing$4(ScalametaParser.scala:2794)
+	at scala.meta.internal.parsers.ScalametaParser.partOrEllipsis$1(ScalametaParser.scala:1209)
+	at scala.meta.internal.parsers.ScalametaParser.tokenSeparated(ScalametaParser.scala:1215)
+	at scala.meta.internal.parsers.ScalametaParser.commaSeparated(ScalametaParser.scala:1221)
+	at scala.meta.internal.parsers.ScalametaParser.$anonfun$argumentExprsWithUsing$2(ScalametaParser.scala:2794)
+	at scala.meta.internal.parsers.ScalametaParser.inParens(ScalametaParser.scala:594)
+	at scala.meta.internal.parsers.ScalametaParser.argumentExprsWithUsing(ScalametaParser.scala:2785)
+	at scala.meta.internal.parsers.ScalametaParser.argumentExprs(ScalametaParser.scala:2800)
+	at scala.meta.internal.parsers.ScalametaParser.$anonfun$initRest$1(ScalametaParser.scala:4296)
+	at scala.meta.internal.parsers.ScalametaParser.atPos(ScalametaParser.scala:688)
+	at scala.meta.internal.parsers.ScalametaParser.autoPos(ScalametaParser.scala:704)
+	at scala.meta.internal.parsers.ScalametaParser.initRest(ScalametaParser.scala:4284)
+	at scala.meta.internal.parsers.ScalametaParser.initInsideTemplate(ScalametaParser.scala:4272)
+	at scala.meta.internal.parsers.ScalametaParser.readInit$1(ScalametaParser.scala:4355)
+	at scala.meta.internal.parsers.ScalametaParser.templateParents(ScalametaParser.scala:4357)
+	at scala.meta.internal.parsers.ScalametaParser.$anonfun$template$1(ScalametaParser.scala:4400)
+	at scala.meta.internal.parsers.ScalametaParser.atPos(ScalametaParser.scala:688)
+	at scala.meta.internal.parsers.ScalametaParser.autoPos(ScalametaParser.scala:704)
+	at scala.meta.internal.parsers.ScalametaParser.template(ScalametaParser.scala:4386)
+	at scala.meta.internal.parsers.ScalametaParser.templateOpt(ScalametaParser.scala:4427)
+	at scala.meta.internal.parsers.ScalametaParser.$anonfun$classDef$1(ScalametaParser.scala:4115)
+	at scala.meta.internal.parsers.ScalametaParser.atPos(ScalametaParser.scala:688)
+	at scala.meta.internal.parsers.ScalametaParser.classDef(ScalametaParser.scala:4091)
+	at scala.meta.internal.parsers.ScalametaParser.tmplDef(ScalametaParser.scala:4047)
+	at scala.meta.internal.parsers.ScalametaParser.topLevelTmplDef(ScalametaParser.scala:4035)
+	at scala.meta.internal.parsers.ScalametaParser$$anonfun$topStat$1.applyOrElse(ScalametaParser.scala:4555)
+	at scala.meta.internal.parsers.ScalametaParser$$anonfun$topStat$1.applyOrElse(ScalametaParser.scala:4543)
+	at scala.runtime.AbstractPartialFunction.apply(AbstractPartialFunction.scala:38)
+	at scala.meta.internal.parsers.ScalametaParser.statSeq(ScalametaParser.scala:4533)
+	at scala.meta.internal.parsers.ScalametaParser.topStatSeq(ScalametaParser.scala:4542)
+	at scala.meta.internal.parsers.ScalametaParser.bracelessPackageStats$1(ScalametaParser.scala:4745)
+	at scala.meta.internal.parsers.ScalametaParser.$anonfun$batchSource$9(ScalametaParser.scala:4751)
+	at scala.meta.internal.parsers.ScalametaParser.atPos(ScalametaParser.scala:688)
+	at scala.meta.internal.parsers.ScalametaParser.$anonfun$batchSource$1(ScalametaParser.scala:4751)
+	at scala.meta.internal.parsers.ScalametaParser.atPos(ScalametaParser.scala:688)
+	at scala.meta.internal.parsers.ScalametaParser.autoPos(ScalametaParser.scala:704)
+	at scala.meta.internal.parsers.ScalametaParser.batchSource(ScalametaParser.scala:4719)
+	at scala.meta.internal.parsers.ScalametaParser.$anonfun$source$1(ScalametaParser.scala:4702)
+	at scala.meta.internal.parsers.ScalametaParser.atPos(ScalametaParser.scala:688)
+	at scala.meta.internal.parsers.ScalametaParser.autoPos(ScalametaParser.scala:704)
+	at scala.meta.internal.parsers.ScalametaParser.source(ScalametaParser.scala:4701)
+	at scala.meta.internal.parsers.ScalametaParser.entrypointSource(ScalametaParser.scala:4707)
+	at scala.meta.internal.parsers.ScalametaParser.$anonfun$parseSource$2(ScalametaParser.scala:137)
+	at scala.meta.internal.parsers.ScalametaParser.parseRule(ScalametaParser.scala:47)
+	at scala.meta.internal.parsers.ScalametaParser.parseSource(ScalametaParser.scala:137)
+	at scala.meta.parsers.Parse$.$anonfun$parseSource$1(Parse.scala:29)
+	at scala.meta.internal.parsers.ScalametaParser$$anon$245.apply(ScalametaParser.scala:4763)
+	at scala.meta.parsers.Api$XtensionParseDialectInput.parse(Api.scala:25)
+	at scala.meta.internal.metals.Trees.$anonfun$parse$1(Trees.scala:66)
+	at scala.Option.map(Option.scala:230)
+	at scala.meta.internal.metals.Trees.parse(Trees.scala:64)
+	at scala.meta.internal.metals.Trees.didChange(Trees.scala:38)
+	at scala.meta.internal.pc.ScalaPresentationCompiler.$anonfun$didChange$1(ScalaPresentationCompiler.scala:128)
+	at java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1590)
+	... 3 more
+
+12 10, 2020 11:34:07 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 6821
+2020.12.10 11:36:03 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.12.10 11:36:11 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.12.10 11:36:36 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.12.10 11:36:53 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.12.10 11:37:00 WARN  no build tool detected in workspace 'C:\Users\aonishiken\workspace\chise-muladd'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2020.12.10 11:40:48 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.12.10 11:40:49 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.12.10 11:42:19 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+12 10, 2020 11:42:26 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 7617
+2020.12.10 11:42:27 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
