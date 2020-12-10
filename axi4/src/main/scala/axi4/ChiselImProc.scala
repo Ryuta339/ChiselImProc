@@ -509,14 +509,14 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
         Module (new NothingFilter (data_width/3, width, height)),
         // Non-Maximum suppression
         // Zero padding at boundary pixel
-        // Module (new ZeroPadding (data_width/3, width, height)),
-        Module (new NothingFilter (data_width/3, width, height)),
+        Module (new ZeroPadding (data_width/3, width, height)),
+        // Module (new NothingFilter (data_width/3, width, height)),
         // Hysteresis threshold
-        // Module (new HystThreshold (data_width/3, width, height)),
-        Module (new NothingFilter (data_width/3, width, height)),
+        Module (new HystThreshold (data_width/3, width, height)),
+        // Module (new NothingFilter (data_width/3, width, height)),
         // Comparison operation
-        // Module (new HystThresholdComp (data_width/3, width, height)),
-        Module (new NothingFilter (data_width/3, width, height)),
+        Module (new HystThresholdComp (data_width/3, width, height)),
+        // Module (new NothingFilter (data_width/3, width, height)),
         // GrayScale image -> RGB
         Module (new Gray2RGBFilter (data_width, width, height)),
     )
