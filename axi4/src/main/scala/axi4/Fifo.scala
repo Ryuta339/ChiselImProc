@@ -44,12 +44,14 @@ class FifoAXISCounterIO[T <: Data] (private val gen: T) extends FifoAXIStreamIO(
 }
 
 class DebugFifoAXIStreamIO[T <: Data] (private val gen: T) extends FifoAXIStreamIO(gen) {
-    val dport = Output (UInt (32.W))
-    val dport2 = Output (UInt (32.W))
     val tdata = Output (UInt (16.W))
     val tdata2 = Output (UInt (200.W))
     val tvalid = Output (Bool())
     val tready = Output (Bool())
+    val tdata3 = Output (UInt (32.W))
+    val tdata4 = Output (UInt (16.W))
+    val tvalid3 = Output (Bool())
+    val tready3 = Output (Bool())
 }
 
 // This class was renamed from FifoIO in chisel-book.

@@ -177,21 +177,18 @@ class RGB2GrayFilter (data_width: Int, width: Int, height: Int) extends ImageFil
     }.elsewhen ((stateReg === one || stateReg === two) && io.deq.ready) {
         xcounter := xcounter + 1.U
     }
-    BoringUtils.addSource (xcounter, "uniqueId")
-    BoringUtils.addSource (ycounter, "uniqueId2")
-
     
     pixGray := ((9437.U * (dataReg & 0x0000FF.U) +
             38469.U * ((dataReg & 0x00FF00.U) >> 8.U) +
             19595.U * ((dataReg & 0xFF0000.U) >> 16.U)))
 
     rolled := (pixGray >> 16.U)
-    io.deq.bits := Mux (rolled > 0xFF.U, 0xFF.U, rolled)
+    // io.deq.bits := Mux (rolled > 0xFF.U, 0xFF.U, rolled)
 
     val xblock = width / 8
     val yblock = height / 8
 
-    // io.deq.bits := xcounter / xblock.U * 2.U + ycounter / yblock.U * 16.U
+    io.deq.bits := xcounter / xblock.U * 2.U + ycounter / yblock.U * 16.U
 }
 
 // This filter converts 256 gray scale image into 256x256x256 color but gray scale image
@@ -241,10 +238,6 @@ class GaussianBlurFilter (data_width: Int, width: Int, height: Int) extends Imag
 
     private val ma = Module (new MulAdd (data_width, KERNEL_SIZE*KERNEL_SIZE))
 
-    BoringUtils.addSource (ma.io.output, "tdata")
-    BoringUtils.addSource (Cat(windowBuffer), "tdata2")
-    BoringUtils.addSource (io.deq.valid, "tvalid")
-    BoringUtils.addSource (io.deq.ready, "tready")
 
     ma.io.a := GAUSS_KERNEL
     ma.io.b := windowBuffer
@@ -312,6 +305,12 @@ class SobelConvolution (data_width: Int, width: Int, height: Int)
     vma.io.a := V_SOBEL_KERNEL
     vma.io.b := windowBuffer
 
+
+    BoringUtils.addSource (hma.io.output.asUInt, "tdata")
+    BoringUtils.addSource (Cat(windowBuffer), "tdata2")
+    BoringUtils.addSource (io.deq.valid, "tvalid")
+    BoringUtils.addSource (io.deq.ready, "tready")
+
     io.deq.bits.data := (hma.io.output*hma.io.output + vma.io.output*vma.io.output).asUInt
     io.deq.bits.horizontal := hma.io.output
     io.deq.bits.vertical := vma.io.output
@@ -329,8 +328,21 @@ class SqrtWrapper(data_width: Int, width: Int, height:Int)
     private val sqrtuint = Module (new SqrtExtractionUInt (2*data_width))
     sqrtuint.io.z := dataReg.data
     io.deq.bits.data := sqrtuint.io.q
+    /*
+    val wire = Wire (Vec (2*data_width, Bool()))
+    for (i <- 0 until 2*data_width) {
+        wire(i) := dataReg.data(2*i+1)
+    }
+    io.deq.bits.data := Cat (wire).asUInt
+    */
     io.deq.bits.horizontal := dataReg.horizontal
     io.deq.bits.vertical := dataReg.vertical
+
+    BoringUtils.addSource (dataReg.data, "tdata3")
+    BoringUtils.addSource (sqrtuint.io.q, "tdata4")
+    BoringUtils.addSource (io.deq.valid, "tvalid3")
+    BoringUtils.addSource (io.deq.ready, "tready3")
+ 
 }
 
 class CalculaateGradient (data_width: Int, width: Int, height: Int)
@@ -575,22 +587,28 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
     io.deq <> buffers(depth-1).io.deq
 
     // for debug
-    val dWire = WireInit (0.U(32.W))
-    val dWire2 = WireInit (0.U(32.W))
     val tvalid = WireInit (false.B)
     val tready = WireInit (false.B)
     val tdata = WireInit (0.U(16.W))
     val tdata2 = WireInit (0.U((8*25).W))
-    BoringUtils.addSink (dWire, "uniqueId")
-    BoringUtils.addSink (dWire2, "uniqueId2")
+    val tvalid3 = WireInit (false.B)
+    val tready3 = WireInit (false.B)
+    val tdata3 = WireInit (0.U(32.W))
+    val tdata4 = WireInit (0.U(16.W))
     BoringUtils.addSink (tvalid, "tvalid")
     BoringUtils.addSink (tready, "tready")
     BoringUtils.addSink (tdata, "tdata")
     BoringUtils.addSink (tdata2, "tdata2")
-    io.dport := dWire
-    io.dport2 := dWire2
+    BoringUtils.addSink (tvalid3, "tvalid3")
+    BoringUtils.addSink (tready3, "tready3")
+    BoringUtils.addSink (tdata3, "tdata3")
+    BoringUtils.addSink (tdata4, "tdata4")
     io.tdata := tdata
     io.tvalid := tvalid
     io.tready := tready
     io.tdata2 := tdata2
+    io.tdata3 := tdata3
+    io.tvalid3 := tvalid3
+    io.tready3 := tready3
+    io.tdata4 := tdata4
 }

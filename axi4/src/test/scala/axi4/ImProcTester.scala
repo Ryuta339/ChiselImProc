@@ -74,10 +74,12 @@ class ImProcUnitTester (c: ChiselImProc) extends PeekPokeTester (c) {
             expect (proc.io.deq.user, if (outidx==0) 1 else 0)
             expect (proc.io.deq.last, if (outidx%MAX_WIDTH==MAX_WIDTH-1) 1 else 0)
 
+            /*
             if (outidx%MAX_WIDTH == MAX_WIDTH/2 && outidx/MAX_WIDTH % 10 == 0) {
                 println (peek (proc.io.dport2).intValue.toString)
                 println (peek (proc.io.dport).intValue.toString)
             }
+            */
 
             outidx = outidx + 1
         }
