@@ -11784,3 +11784,10 @@ where tpe = 2
 12 10, 2020 11:42:26 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
 åxçê: Unmatched cancel notification for request id 7617
 2020.12.10 11:42:27 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+12 10, 2020 11:48:09 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 7813
+12 10, 2020 11:48:14 åﬂëO org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+åxçê: Unmatched cancel notification for request id 7849
+2020.12.10 11:48:34 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.12.10 11:57:21 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\axi4\ImProcTester.scala
+2020.12.10 11:57:43 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\axi4\ImProcTester.scala
