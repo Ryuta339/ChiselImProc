@@ -54,15 +54,13 @@ class SMulAdd (data_width: Int, num: Int) extends Module {
 }
 
 // set status
-abstract class StatusFifo[T <: Data, U <: Data] (private val genEnq: T, private val genDeq: U, data_width: Int) extends Module {
+abstract class StatusFifo[T <: Data, U <: Data] (private val genEnq: T, private val genDeq: U) extends Module {
 
     // define states
     // block state is not used now
     val empty :: one :: two :: block :: Nil = Enum (4)
     val stateReg = RegInit (empty)
-    // val dataReg = RegInit (0.U(data_width.W))
     val dataReg = Reg (genEnq)
-    // val shadowReg = RegInit (0.U(data_width.W))
     val shadowReg = Reg (genEnq)
     val userReg = Reg (Bool())
     val shadowUserReg = Reg (Bool())
@@ -136,7 +134,7 @@ abstract class StatusFifo[T <: Data, U <: Data] (private val genEnq: T, private 
 // ImageFilter is a base class for each filter
 // Each filter extends this class.
 // The result of a filter should be written on io.deq.bits
-class ImageFilter (data_width: Int, width: Int, height: Int) extends StatusFifo(UInt(data_width.W), UInt(data_width.W), data_width) {
+class ImageFilter (data_width: Int, width: Int, height: Int) extends StatusFifo(UInt(data_width.W), UInt(data_width.W)) {
     val io = IO (new FifoAXIStreamIO (UInt (data_width.W)))
 
     // default output
@@ -254,11 +252,17 @@ class GaussianBlurFilter (data_width: Int, width: Int, height: Int) extends Imag
     io.deq.bits := ma.io.output >> 4
 }
 
+class SobelGradient(private val data_width: Int) extends Bundle{
+    val data = UInt (data_width.W)
+    val horizontal = SInt (32.W)
+    val vertical = SInt (32.W)
+}
+
 // This is a sobel filter (first differential filter along to x and y axis)
-class SobelFilter (data_width: Int, width: Int, height: Int) 
-        extends StatusFifo(UInt(data_width.W), new GradPix, data_width) with GradDirDefinition {
+class SobelConvolution (data_width: Int, width: Int, height: Int) 
+        extends StatusFifo(UInt(data_width.W), new SobelGradient(4*data_width)) {
     val io = IO (
-        new FifoAXIStreamDIO(UInt(data_width.W), new GradPix)
+        new FifoAXIStreamDIO(UInt(data_width.W), new SobelGradient(4*data_width))
     )
 
     val KERNEL_SIZE = 3
@@ -305,20 +309,42 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
     vma.io.a := V_SOBEL_KERNEL
     vma.io.b := windowBuffer
 
-    val pix_euc = Wire(UInt((4*data_width).W))
-    val pix_sqrt_euc = Wire(UInt((2*data_width).W))
-    val pix_sobel = Wire (UInt((2*data_width).W))
-    pix_euc := (hma.io.output*hma.io.output + vma.io.output*vma.io.output).asUInt
+    io.deq.bits.data := (hma.io.output*hma.io.output + vma.io.output*vma.io.output).asUInt
+    io.deq.bits.horizontal := hma.io.output
+    io.deq.bits.vertical := vma.io.output
+}
+
+class SqrtWrapper(data_width: Int, width: Int, height:Int) 
+        extends StatusFifo (new SobelGradient(4*data_width), new SobelGradient(2*data_width)) {
+    val io = IO (
+        new FifoAXIStreamDIO(new SobelGradient(4*data_width), new SobelGradient(2*data_width))
+    )
+
+    setStatus (io)
 
     // Calculaate square root
     private val sqrtuint = Module (new SqrtExtractionUInt (2*data_width))
-    sqrtuint.io.z := pix_euc
-    pix_sqrt_euc := sqrtuint.io.q
+    sqrtuint.io.z := dataReg.data
+    io.deq.bits.data := sqrtuint.io.q
+    io.deq.bits.horizontal := dataReg.horizontal
+    io.deq.bits.vertical := dataReg.vertical
+}
 
-    pix_sobel := Mux (pix_sqrt_euc > 0xFF.U, 0xFF.U, pix_sqrt_euc)
+class CalculaateGradient (data_width: Int, width: Int, height: Int)
+        extends StatusFifo (new SobelGradient(2*data_width), new GradPix) with GradDirDefinition {
+    
+    val io = IO (
+        new FifoAXIStreamDIO(new SobelGradient(2*data_width), new GradPix)
+    )
+
+    setStatus (io)
+
+    val pix_sobel = Wire (UInt((2*data_width).W))
+
+    pix_sobel := Mux (dataReg.data > 0xFF.U, 0xFF.U, dataReg.data)
 
     val t_int = Wire (SInt((4*data_width).W))
-    t_int := Mux (hma.io.output === 0.S, 0x7FFFFFFF.S, vma.io.output * 0x100.S / hma.io.output)
+    t_int := Mux (dataReg.horizontal === 0.S, 0x7FFFFFFF.S, dataReg.vertical * 0x100.S / dataReg.horizontal)
 
     val grad_sobel = Wire (UInt(2.W))
     when (-618.S < t_int && t_int <= -106.S) {
@@ -335,9 +361,24 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
     io.deq.bits.value := pix_sobel
 }
 
+class SobelFilter (data_width: Int, width: Int, height: Int)
+        extends StatusFifo(UInt(data_width.W), new GradPix) with GradDirDefinition {
+        
+    val io = IO (new FifoAXIStreamDIO (UInt(data_width.W), new GradPix))
+
+    val conv = Module (new SobelConvolution (data_width, width, height))
+    val sqrtw = Module (new SqrtWrapper (data_width, width, height))
+    val cgrad = Module (new CalculaateGradient (data_width, width, height))
+
+    io.enq <> conv.io.enq
+    conv.io.deq <> sqrtw.io.enq
+    sqrtw.io.deq <> cgrad.io.enq
+    cgrad.io.deq <> io.deq
+}
+
 // Non Max Supression filter.
 class NonMaxSupression (data_width: Int, width: Int, height: Int)
-        extends StatusFifo(new GradPix, UInt(data_width.W), data_width) with GradDirDefinition {
+        extends StatusFifo(new GradPix, UInt(data_width.W)) with GradDirDefinition {
     val io = IO (new FifoAXIStreamDIO(new GradPix, UInt(data_width.W)))
 
    val WINDOW_SIZE = 3
@@ -505,8 +546,8 @@ class ChiselImProc (data_width: Int, depth: Int, width: Int, height: Int) extend
         Module (new GaussianBlurFilter (data_width/3, width, height)),
         // Module (new NothingFilter (data_width/3, width, height)),
         // Sobel filter
-        // Module (new SobelAndNonMaxSupressionFilter (data_width/3, width, height)),
-        Module (new NothingFilter (data_width/3, width, height)),
+        Module (new SobelAndNonMaxSupressionFilter (data_width/3, width, height)),
+        // Module (new NothingFilter (data_width/3, width, height)),
         // Non-Maximum suppression
         // Zero padding at boundary pixel
         Module (new ZeroPadding (data_width/3, width, height)),
