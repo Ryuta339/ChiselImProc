@@ -327,14 +327,12 @@ class SqrtWrapper(data_width: Int, width: Int, height:Int)
     // Calculaate square root
     private val sqrtuint = Module (new SqrtExtractionUInt (2*data_width))
     sqrtuint.io.z := dataReg.data
-    io.deq.bits.data := sqrtuint.io.q
-    /*
+    // io.deq.bits.data := sqrtuint.io.q
     val wire = Wire (Vec (2*data_width, Bool()))
     for (i <- 0 until 2*data_width) {
-        wire(i) := dataReg.data(2*i+1)
+        wire(i) := dataReg.data(2*i+1) | dataReg.data(2*i)
     }
     io.deq.bits.data := Cat (wire).asUInt
-    */
     io.deq.bits.horizontal := dataReg.horizontal
     io.deq.bits.vertical := dataReg.vertical
 
@@ -382,12 +380,39 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
     val io = IO (new FifoAXIStreamDIO (UInt(data_width.W), new GradPix))
 
     val conv = Module (new SobelConvolution (data_width, width, height))
-    val sqrtw = Module (new SqrtWrapper (data_width, width, height))
+    // val sqrtw = Module (new SqrtWrapper (data_width, width, height))
+    val sqrt = Module (new SqrtExtractionUIntAxis (2*data_width))
     val cgrad = Module (new CalculaateGradient (data_width, width, height))
 
+    val horizontalBuf = Reg (SInt((4*data_width).W))
+    val verticalBuf = Reg (SInt((4*data_width).W))
+    val userBuf = Reg (Bool())
+    val lastBuf = Reg (Bool())
+
     io.enq <> conv.io.enq
-    conv.io.deq <> sqrtw.io.enq
-    sqrtw.io.deq <> cgrad.io.enq
+    // conv.io.deq <> sqrtw.io.enq
+    // sqrtw.io.deq <> cgrad.io.enq
+
+    conv.io.deq.ready := sqrt.io.deq.ready
+    sqrt.io.deq.valid := conv.io.deq.valid
+    sqrt.io.deq.bits := conv.io.deq.bits.data
+
+    when (conv.io.deq.valid && sqrt.io.deq.ready) {
+        horizontalBuf := conv.io.deq.bits.horizontal
+        verticalBuf := conv.io.deq.bits.vertical
+        userBuf := conv.io.deq.user
+        lastBuf := conv.io.deq.last
+    }
+
+    sqrt.io.enq.ready := cgrad.io.enq.ready
+    cgrad.io.enq.valid := sqrt.io.enq.valid
+    cgrad.io.enq.bits.data := sqrt.io.enq.bits
+
+    cgrad.io.enq.bits.horizontal := horizontalBuf
+    cgrad.io.enq.bits.vertical := verticalBuf
+    cgrad.io.enq.user := userBuf
+    cgrad.io.enq.last := lastBuf
+
     cgrad.io.deq <> io.deq
 }
 

@@ -1,0 +1,40 @@
+[
+  {
+    "class":"firrtl.transforms.DontTouchAnnotation",
+    "target":"~ChiselImProc|SobelConvolution>io__deq_ready"
+  },
+  {
+    "class":"firrtl.transforms.DontTouchAnnotation",
+    "target":"~ChiselImProc|SobelConvolution>io__deq_valid"
+  },
+  {
+    "class":"firrtl.transforms.DontTouchAnnotation",
+    "target":"~ChiselImProc|SobelConvolution>_T_3896"
+  },
+  {
+    "class":"firrtl.transforms.DontTouchAnnotation",
+    "target":"~ChiselImProc|SobelConvolution>_T_3879"
+  },
+  {
+    "class":"logger.LogLevelAnnotation",
+    "globalLogLevel":{
+      
+    }
+  },
+  {
+    "class":"firrtl.options.TargetDirAnnotation",
+    "directory":"test_run_dir/axi4.ImProcMain215521121"
+  },
+  {
+    "class":"firrtl.options.OutputAnnotationFileAnnotation",
+    "file":"ChiselImProc"
+  },
+  {
+    "class":"firrtl.EmitCircuitAnnotation",
+    "emitter":"firrtl.VerilogEmitter"
+  },
+  {
+    "class":"firrtl.transforms.BlackBoxTargetDirAnno",
+    "targetDir":"test_run_dir/axi4.ImProcMain215521121"
+  }
+]
