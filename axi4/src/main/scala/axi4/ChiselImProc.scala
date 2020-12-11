@@ -412,13 +412,11 @@ class SqrtWrapper(data_width: Int, width: Int, height:Int)
     io.deq.bits.horizontal := inputreg(2*data_width-1).horizontal
     io.deq.bits.vertical := inputreg(2*data_width-1).vertical
 
-    /*
     BoringUtils.addSource (dataReg.data, "tdata3")
     BoringUtils.addSource (qreg(2*data_width-1), "tdata4")
     BoringUtils.addSource (io.deq.valid, "tvalid3")
     BoringUtils.addSource (io.deq.ready, "tready3")
  
-    */
 }
 
 class CalculaateGradient (data_width: Int, width: Int, height: Int)
