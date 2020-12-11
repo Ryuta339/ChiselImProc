@@ -149,3 +149,52 @@ class ImProcTester extends ChiselFlatSpec {
     }
 }
 
+
+class SqrtWrapperUnitTester (c: SqrtWrapper) extends PeekPokeTester(c) {
+    private val sw = c
+    reset(10)
+    poke (sw.io.enq.valid, 1)
+    poke (sw.io.enq.bits.data, 100)
+    poke (sw.io.deq.ready, 1)
+    poke (sw.io.enq.user, 1)
+    poke (sw.io.enq.last, 0)
+    poke (sw.io.enq.bits.horizontal, 1)
+    poke (sw.io.enq.bits.vertical, 1)
+    step (1)
+
+    for (i <- 0 until 100) {
+        poke (sw.io.enq.valid, 1)
+        poke (sw.io.deq.ready, 1)
+        poke (sw.io.enq.user, 0)
+        poke (sw.io.enq.bits.data, 0)
+        poke (sw.io.enq.last, if (i%10==9) 1 else 0)
+        poke (sw.io.enq.bits.horizontal, 1)
+        poke (sw.io.enq.bits.vertical, 1)
+        println(peek (sw.io.deq.bits.data).intValue.toString)
+        step (1)
+    }
+}
+
+class SqrtWrapperTester extends ChiselFlatSpec {
+    private val data_width = 8
+    private val width = 10
+    private val height = 10
+    private val backendNames = if (firrtl.FileUtils.isCommandAvailable (Seq ("verilator", "--version"))) {
+        Array ("firrtl", "verilator")
+    } else {
+        Array  ("firrtl")
+    }
+    for (backendName <- backendNames) {
+        "SqrtWrapper" should s"calculate square root" in {
+            Driver (() => new SqrtWrapper(data_width, width, height), backendName) {
+                c => new SqrtWrapperUnitTester(c)
+            } should be (true)
+        }
+    }
+
+    "Basic test using Driver.execute" should "be used as an altetrnative way to run specification" in {
+        iotesters.Driver.execute (Array(), ()=> new SqrtWrapper(data_width, width, height)) {
+            c => new SqrtWrapperUnitTester (c)
+        } should be (true)
+    }
+}

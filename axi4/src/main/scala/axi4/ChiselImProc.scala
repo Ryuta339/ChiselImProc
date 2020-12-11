@@ -183,12 +183,12 @@ class RGB2GrayFilter (data_width: Int, width: Int, height: Int) extends ImageFil
             19595.U * ((dataReg & 0xFF0000.U) >> 16.U)))
 
     rolled := (pixGray >> 16.U)
-    // io.deq.bits := Mux (rolled > 0xFF.U, 0xFF.U, rolled)
+    io.deq.bits := Mux (rolled > 0xFF.U, 0xFF.U, rolled)
 
     val xblock = width / 8
     val yblock = height / 8
 
-    io.deq.bits := xcounter / xblock.U * 2.U + ycounter / yblock.U * 16.U
+    // io.deq.bits := xcounter / xblock.U * 2.U + ycounter / yblock.U * 16.U
 }
 
 // This filter converts 256 gray scale image into 256x256x256 color but gray scale image
@@ -322,8 +322,79 @@ class SqrtWrapper(data_width: Int, width: Int, height:Int)
         new FifoAXIStreamDIO(new SobelGradient(4*data_width), new SobelGradient(2*data_width))
     )
 
+    val sel = Wire (Bool())
     setStatus (io)
+    sel := (stateReg===one || stateReg===two) && io.deq.ready
 
+    private class SqrtExtractionElement(val data_width: Int = 8, val lv: Int) extends Module {
+        val io = IO (
+            new Bundle {
+                val z = Input (UInt((2*data_width).W))
+                val inq = Input (UInt(data_width.W))
+                val outq = Output (UInt(data_width.W))
+                val inz = Input (UInt ((2*data_width+1).W))
+                val outz = Output (UInt ((2*data_width+1).W))
+                val inr = Input (UInt ((2*data_width+1).W))
+                val outr = Output (UInt ((2*data_width+1).W))
+            }
+        )
+       
+        val zlv = Wire (UInt ((2*data_width+1).W))
+        val rlv = Wire (UInt ((2*data_width+1).W))
+        val qsub = Wire (Vec (data_width, Bool()))
+
+        if (lv == data_width-1) {
+            zlv := Cat (0.U(1.W), io.z(2*data_width-1, 2*data_width-2), 0.U((2*data_width-2).W))
+            rlv := Cat (zlv(2*data_width, 2*data_width-2)-1.U, 0.U((2*data_width-2).W))
+            qsub(data_width-1) := ~rlv(2*data_width)
+        } else {
+            when (io.inq(lv+1)) {
+                zlv := Cat (io.inr(data_width+lv+2,2*lv+2), io.z(2*lv+1, 2*lv)) << (2*lv).U
+            }.otherwise {
+                zlv := Cat (io.inz(data_width+lv+2,2*lv+2), io.z(2*lv+1, 2*lv)) << (2*lv).U
+            }
+            rlv := (zlv(data_width+lv+2, 2*lv) - Cat (io.inq(data_width-1, lv+1), 1.U(2.W))) << (2*lv).U
+            qsub(lv) := ~ rlv(data_width+lv+2)
+        }
+        // 下位ビットの処理
+        for (i <- 0 until lv) {
+            qsub (i) := 0.U
+        }
+        // 上位ビットの処理
+        for (i <- (lv+1) until data_width) {
+            qsub (i) := io.inq(i)
+        }
+
+        io.outq := qsub.asUInt
+        io.outz := zlv.asUInt
+        io.outr := rlv.asUInt
+    }
+
+    private val ladder = (2*data_width-1 to 0 by -1).map(x => {Module (new SqrtExtractionElement(2*data_width, x))}).toArray
+    val inputreg = Reg (Vec (2*data_width, new SobelGradient(4*data_width)))
+    val qreg = Reg (Vec (2*data_width, UInt((2*data_width).W)))
+    val rlvreg = Reg (Vec (2*data_width, UInt((2*data_width+1).W)))
+    val zlvreg = Reg (Vec (2*data_width, UInt((2*data_width+1).W)))
+    for (i <- 0 until (2*data_width-1)) {
+        ladder(i+1).io.z := inputreg(i).data
+        ladder(i+1).io.inq := qreg(i)
+        ladder(i+1).io.inz := zlvreg(i)
+        ladder(i+1).io.inr := rlvreg(i)
+
+        inputreg(i+1) := Mux (sel, inputreg(i), inputreg(i+1))
+        qreg(i) := Mux (sel, ladder(i).io.outq, qreg(i))
+        rlvreg(i) := Mux (sel, ladder(i).io.outr, rlvreg(i))
+        zlvreg(i) := Mux (sel, ladder(i).io.outz, zlvreg(i))
+    }
+    ladder(0).io.z := dataReg.data
+    ladder(0).io.inq := 0.U
+    ladder(0).io.inr := 0.U
+    ladder(0).io.inz := 0.U
+    inputreg(0) := Mux (sel, dataReg, inputreg(0))
+    qreg(2*data_width-1) := Mux (sel, ladder(2*data_width-1).io.outq, qreg(2*data_width-1))
+    rlvreg(2*data_width-1) := Mux (sel, ladder(2*data_width-1).io.outr, rlvreg(2*data_width-1))
+    zlvreg(2*data_width-1) := Mux (sel, ladder(2*data_width-1).io.outz, zlvreg(2*data_width-1))
+    /*
     // Calculaate square root
     private val sqrtuint = Module (new SqrtExtractionUInt (2*data_width))
     sqrtuint.io.z := dataReg.data
@@ -335,12 +406,19 @@ class SqrtWrapper(data_width: Int, width: Int, height:Int)
     io.deq.bits.data := Cat (wire).asUInt
     io.deq.bits.horizontal := dataReg.horizontal
     io.deq.bits.vertical := dataReg.vertical
+    */
 
+    io.deq.bits.data := qreg(2*data_width-1)
+    io.deq.bits.horizontal := inputreg(2*data_width-1).horizontal
+    io.deq.bits.vertical := inputreg(2*data_width-1).vertical
+
+    /*
     BoringUtils.addSource (dataReg.data, "tdata3")
-    BoringUtils.addSource (sqrtuint.io.q, "tdata4")
+    BoringUtils.addSource (qreg(2*data_width-1), "tdata4")
     BoringUtils.addSource (io.deq.valid, "tvalid3")
     BoringUtils.addSource (io.deq.ready, "tready3")
  
+    */
 }
 
 class CalculaateGradient (data_width: Int, width: Int, height: Int)
@@ -380,38 +458,12 @@ class SobelFilter (data_width: Int, width: Int, height: Int)
     val io = IO (new FifoAXIStreamDIO (UInt(data_width.W), new GradPix))
 
     val conv = Module (new SobelConvolution (data_width, width, height))
-    // val sqrtw = Module (new SqrtWrapper (data_width, width, height))
-    val sqrt = Module (new SqrtExtractionUIntAxis (2*data_width))
+    val sqrtw = Module (new SqrtWrapper (data_width, width, height))
     val cgrad = Module (new CalculaateGradient (data_width, width, height))
 
-    val horizontalBuf = Reg (SInt((4*data_width).W))
-    val verticalBuf = Reg (SInt((4*data_width).W))
-    val userBuf = Reg (Bool())
-    val lastBuf = Reg (Bool())
-
     io.enq <> conv.io.enq
-    // conv.io.deq <> sqrtw.io.enq
-    // sqrtw.io.deq <> cgrad.io.enq
-
-    conv.io.deq.ready := sqrt.io.deq.ready
-    sqrt.io.deq.valid := conv.io.deq.valid
-    sqrt.io.deq.bits := conv.io.deq.bits.data
-
-    when (conv.io.deq.valid && sqrt.io.deq.ready) {
-        horizontalBuf := conv.io.deq.bits.horizontal
-        verticalBuf := conv.io.deq.bits.vertical
-        userBuf := conv.io.deq.user
-        lastBuf := conv.io.deq.last
-    }
-
-    sqrt.io.enq.ready := cgrad.io.enq.ready
-    cgrad.io.enq.valid := sqrt.io.enq.valid
-    cgrad.io.enq.bits.data := sqrt.io.enq.bits
-
-    cgrad.io.enq.bits.horizontal := horizontalBuf
-    cgrad.io.enq.bits.vertical := verticalBuf
-    cgrad.io.enq.user := userBuf
-    cgrad.io.enq.last := lastBuf
+    conv.io.deq <> sqrtw.io.enq
+    sqrtw.io.deq <> cgrad.io.enq
 
     cgrad.io.deq <> io.deq
 }
