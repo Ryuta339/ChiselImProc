@@ -43,6 +43,7 @@ class FifoAXISCounterIO[T <: Data] (private val gen: T) extends FifoAXIStreamIO(
     val hcount = Output (UInt (20.W))
 }
 
+// For debug
 class DebugFifoAXIStreamIO[T <: Data] (private val gen: T) extends FifoAXIStreamIO(gen) {
     val tdata = Output (UInt (16.W))
     val tdata2 = Output (UInt (200.W))

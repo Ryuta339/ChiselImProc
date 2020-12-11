@@ -54,6 +54,9 @@ class SMulAdd (data_width: Int, num: Int) extends Module {
 }
 
 // set status
+//      Todo: the type of input is T and tye type of output is U,
+//            it may be easy to unify.
+//            Now, io is declared in the child class, but this declaration can be written in this class.
 abstract class StatusFifo[T <: Data, U <: Data] (private val genEnq: T, private val genDeq: U) extends Module {
 
     // define states
@@ -305,7 +308,7 @@ class SobelConvolution (data_width: Int, width: Int, height: Int)
     vma.io.a := V_SOBEL_KERNEL
     vma.io.b := windowBuffer
 
-
+    // for debug
     BoringUtils.addSource (hma.io.output.asUInt, "tdata")
     BoringUtils.addSource (Cat(windowBuffer), "tdata2")
     BoringUtils.addSource (io.deq.valid, "tvalid")
@@ -394,24 +397,13 @@ class SqrtWrapper(data_width: Int, width: Int, height:Int)
     qreg(2*data_width-1) := Mux (sel, ladder(2*data_width-1).io.outq, qreg(2*data_width-1))
     rlvreg(2*data_width-1) := Mux (sel, ladder(2*data_width-1).io.outr, rlvreg(2*data_width-1))
     zlvreg(2*data_width-1) := Mux (sel, ladder(2*data_width-1).io.outz, zlvreg(2*data_width-1))
-    /*
-    // Calculaate square root
-    private val sqrtuint = Module (new SqrtExtractionUInt (2*data_width))
-    sqrtuint.io.z := dataReg.data
-    // io.deq.bits.data := sqrtuint.io.q
-    val wire = Wire (Vec (2*data_width, Bool()))
-    for (i <- 0 until 2*data_width) {
-        wire(i) := dataReg.data(2*i+1) | dataReg.data(2*i)
-    }
-    io.deq.bits.data := Cat (wire).asUInt
-    io.deq.bits.horizontal := dataReg.horizontal
-    io.deq.bits.vertical := dataReg.vertical
-    */
+    
 
     io.deq.bits.data := qreg(2*data_width-1)
     io.deq.bits.horizontal := inputreg(2*data_width-1).horizontal
     io.deq.bits.vertical := inputreg(2*data_width-1).vertical
 
+    // for debug
     BoringUtils.addSource (dataReg.data, "tdata3")
     BoringUtils.addSource (qreg(2*data_width-1), "tdata4")
     BoringUtils.addSource (io.deq.valid, "tvalid3")

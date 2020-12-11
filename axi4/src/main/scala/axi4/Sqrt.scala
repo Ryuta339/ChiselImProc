@@ -38,6 +38,7 @@ class SqrtUInt (val data_width: Int) extends Module {
     io.enq.bits :=  answerReg
 }
 
+// There exists some delay
 class SqrtExtractionUInt (val data_width: Int = 8) extends Module {
     val io = IO (new Bundle {
         val z = Input(UInt((2*data_width).W))
@@ -68,6 +69,7 @@ class SqrtExtractionUInt (val data_width: Int = 8) extends Module {
     io.q := qSub.asUInt
 }
 
+// Extremely slow
 class SqrtExtractionUIntAxis (val data_width: Int = 8) extends Module {
     val io = IO (new Bundle {
         val enq = EnqIO(UInt((2*data_width).W))
