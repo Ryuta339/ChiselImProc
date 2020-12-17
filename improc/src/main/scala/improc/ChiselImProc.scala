@@ -46,9 +46,13 @@ class SMulAdd (data_width: Int, num: Int) extends Module {
 
     var i = 0
     var tmp = 0.S ((2*data_width).W)
-    while (i < num) {
-        tmp += io.a(i) * io.b(i)
-        i += 1
+    val step = 3
+    for (i <- 0 until num by step) {
+        var intmp = 0.S((2*data_width).W)
+        for (j <- 0 until step) {
+            intmp += io.a(i+j) * io.b (i+j)
+        }
+        tmp += intmp
     }
     io.output := tmp
 }
