@@ -48,7 +48,7 @@ class ImProcUnitTester (c: ChiselImProc) extends PeekPokeTester (c) {
 
     reset (10)
 
-    val imageIn = ReadImage(new File("lenna_original.png"))
+    val imageIn = ReadImage(new File("lenna.png"))
     var imageOut = ArrayBuffer.fill(MAX_WIDTH*MAX_HEIGHT) {0}
 
     var inidx = 0
@@ -87,7 +87,7 @@ class ImProcUnitTester (c: ChiselImProc) extends PeekPokeTester (c) {
         step (1)
     }
 
-    WriteImage (imageOut.toSeq, new File("out_original.png"))
+    WriteImage (imageOut.toSeq, new File("out.png"))
 
 }
 
@@ -97,8 +97,8 @@ class ImProcUnitTester2 (c: ChiselImProc) extends PeekPokeTester (c) {
 class ImProcTester extends ChiselFlatSpec {
     private val data_width = 24
     private val depth = 7
-    private val width = 512
-    private val height = 512
+    private val width = 256
+    private val height = 256
 
     private val backendNames = if (firrtl.FileUtils. isCommandAvailable (Seq ("varilator", "--version"))) {
         Array ("firrtl", "verilator")
