@@ -1,0 +1,91 @@
+\documentclass[unicode]{beamer}
+
+\usepackage{luatexja}
+\usepackage[ipaex]{luatexja-preset}
+\usepackage{graphicx, color}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{tikz}
+\usepackage{amsmath,amssymb,nccmath}
+\usepackage{overpic}
+
+\usetikzlibrary{arrows}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{positioning}
+
+\lstset{
+    language=Scala,
+    breaklines=true,
+    breakindent=10pt,
+    basicstyle=\ttfamily\scriptsize,
+    commentstyle={\itshape},
+    keywordstyle={\bfseries\color[rgb]{0,0,1}},
+    frame = tbl,
+    numbers = left,
+    stepnumber = 1,
+    numberstyle = \tiny,
+    tabsize = 4
+}
+
+\captionsetup{font={footnotesize}}
+
+\setbeamertemplate{footline}[frame number]
+
+\title{Chisel を用いたエッジ検出フィルタの実装とVivado HLSとの比較}
+\author{佐々木　隆汰}
+\date{December 2020}
+
+\begin{document}
+
+\begin{frame}{}
+    \maketitle
+\end{frame}
+
+\begin{frame}{Contents}
+   \begin{itemize}
+       \item Chisel の導入
+       \item Pros. \& Cons.
+       \item ChiselImProc の説明
+       \item Vivado HLS との比較
+   \end{itemize} 
+\end{frame}
+
+\input{1_syntax_chisel}
+\input{2_proc_cons}
+\input{3_improc}
+\input{4_result}
+
+
+
+\begin{frame}{参考文献}
+    \begin{itemize}
+        \item Digital Design with Chisel \\
+            \scriptsize{
+            \url{https://raw.githubusercontent.com/wiki/schoeberl/chisel-book/chisel-book.pdf}
+            \url{https://github.com/schoeberl/chisel-book}
+            }
+            
+        \item Chisel入門書「Digital Design with Chisel」1章の勉強記録 \\
+            \scriptsize{
+            \url{https://qiita.com/Kosuke_Matsui/items/80dde1219e3ce02c4b66}
+            }
+            
+        \item Chisel 3 Wiki \\
+            \scriptsize{
+            \url{https://github.com/chipsalliance/chisel3/wiki}
+            }
+            
+        \item Scala Doc \\
+            \scriptsize{
+            \url{https://www.chisel-lang.org/api/latest/chisel3/index.html}
+            }
+            
+        \item Cheet Sheet \\
+            \scriptsize{
+            \url{https://github.com/freechipsproject/chisel-cheatsheet/releases/latest/download/chisel_cheatsheet.pdf}
+            }
+    \end{itemize}
+\end{frame}
+
+\end{document}

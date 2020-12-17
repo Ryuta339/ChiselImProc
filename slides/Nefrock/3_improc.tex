@@ -1,0 +1,102 @@
+
+\begin{frame}{Contents}
+   \begin{itemize}
+       \item[\textcolor{red}{$\checkmark$}] Chisel の導入
+       \item[\textcolor{red}{$\checkmark$}] Pros. \& Cons.
+       \item[\textcolor{red}{$\rhd$}] ChiselImProc の説明
+       \item Vivado HLS との比較
+   \end{itemize} 
+\end{frame}
+
+
+
+\begin{frame}{ChiselImProc の全体構成}
+    \centering
+    \begin{tikzpicture}
+        \draw (-5.1,-2.5) rectangle (0.1,2.5);
+        \fill[cyan!20] (-5,1.1) rectangle (0, 1.7);
+        \fill[red!10] (-5,0.4) rectangle (0, 1.0);
+        \foreach \x in {3,2,1,0,-1,-2,-3}
+        {
+            \draw (-5,{0.7*\x-0.3}) rectangle (0,{0.7*\x+0.3});
+        }
+        \node at (-2.5, 2.1) {RGB2GrayFilter};
+        \node at (-2.5, 1.4) {GaussianFilter};
+        \node at (-2.5, 0.7) {SobelAndNonMaxSupression};
+        \node at (-2.5, 0) {ZeroPadding};
+        \node at (-2.5, -0.7) {HystThreshold};
+        \node at (-2.5, -1.4) {HystThresholdComp};
+        \node at (-2.5, -2.1) {Gray2RGBFilter};
+        \foreach \x in {2,1,0,-1,-2,-3}
+        {
+            \draw[-Stealth] (0, {0.7*\x+0.7}) to [bend left=60] node[right] {8 bits} (0, {0.7*\x});
+        }
+        
+        \draw[-Stealth] (-2.5, 2.9) node[above] {24 bits} -- (-2.5, 2.5);
+        \draw[-Stealth] (-2.5, -2.5) -- (-2.5, -2.9) node[below] {24 bits};
+    \end{tikzpicture}
+    \begin{itemize}
+        \item \textcolor{cyan}{
+             Gaussian Filter は8bitの5x5サイズの畳み込みで遅延。 }
+        \item \textcolor{cyan}{
+            3x3 サイズに落として計算。}
+    \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{SobelAndNonMaxSupression の構成}
+    \begin{columns}[t,onlytextwidth]
+        \begin{column}{0.5\textwidth}
+        SobelAndNonMaxSupression の構成
+    \centering
+    \begin{tikzpicture}
+        \draw (-4.5,-0.8) rectangle (-0.5, 0.8);
+        \fill[red!10] (-4.4, 0.05) rectangle (-0.6, 0.65);
+        \foreach \x in {-1,1}
+        {
+            \draw (-4.4, {0.35*\x-0.3}) rectangle (-0.6, {0.35*\x+0.3});
+        }
+        \node at (-2.5, 0.35) {SobelFilter};
+        \node at (-2.5, -0.35) {NonMaxSupression};
+        \draw[-Stealth] (-0.6, 0.35) to [bend left=60] node[right] {GradPix} (-0.6,-0.35);  
+        
+        \draw[-Stealth] (-2.5, 1.5) node[above] {8 bits} -- (-2.5, 0.8);
+        \draw[-Stealth] (-2.5, -0.8) -- (-2.5,-1.5) node[below] {8 bits};
+   \end{tikzpicture} 
+   \end{column}
+   \begin{column}{0.5\textwidth}
+        SobelFilterの構成
+       \centering
+       \begin{tikzpicture}
+           \draw (-4.5, -1.1) rectangle (-0.5, 1.1);
+           \only<1>{
+                \fill[cyan!20] (-4.4, -0.3) rectangle (-0.6, 0.3);
+           }
+           \only<2>{
+                \fill[olive!20] (-4.4, 0.4) rectangle (-0.6, 1.0);
+           }
+           \foreach \x in {-1,0,1}
+           {
+                \draw (-4.4, {0.7*\x-0.3}) rectangle (-0.6, {0.7*\x+0.3});
+           }
+           \node at (-2.5, 0.7) {SobelConvolution};
+           \node at (-2.5, 0) {SqrtWrapper};
+           \node at (-2.5, -0.7) {CalculateGradient};
+           
+           \draw[-Stealth] (-2.5, 1.9) node[above] {8bits} -- (-2.5, 1.1);
+           \draw[-Stealth] (-2.5,-1.1) -- (-2.5, -1.9) node[below] {GradPix};
+       \end{tikzpicture}
+   \end{column}
+   \end{columns}
+   \only<1>{
+        \textcolor{cyan}{
+            32 bit の開平法は遅延するので、レジスタを導入。
+        }
+   }
+   \only<2>{
+        \textcolor{olive}{
+            16 bit の3x3サイズの畳み込みが遅い可能性。
+        }
+   }
+\end{frame}
