@@ -13003,3 +13003,14 @@ java.lang.NullPointerException
 2020.12.15 16:00:29 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\axi4\ImProcTester.scala
 12 15, 2020 5:05:01 åﬂå„ org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
 åxçê: Unmatched cancel notification for request id 355
+12 15, 2020 6:43:20 åﬂå„ org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+èÓïÒ: Unsupported notification method: $/setTraceNotification
+2020.12.15 18:43:45 INFO  shutting down Metals
+2020.12.17 11:14:04 INFO  Started: Metals version 0.9.7 in workspace 'C:\Users\aonishiken\workspace\chise-muladd' for client vscode.
+2020.12.17 11:14:05 INFO  time: initialize in 0.87s
+2020.12.17 11:14:07 WARN  Build server is not auto-connectable.
+2020.12.17 11:14:07 WARN  no build tool detected in workspace 'C:\Users\aonishiken\workspace\chise-muladd'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2020.12.17 13:01:57 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\axi4\ChiselImProc.scala
+2020.12.17 13:02:03 INFO  no build target: using presentation compiler with only scala-library
+12 17, 2020 1:02:18 åﬂå„ org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+èÓïÒ: Unsupported notification method: $/setTraceNotification
