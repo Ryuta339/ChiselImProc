@@ -13014,3 +13014,35 @@ java.lang.NullPointerException
 2020.12.17 13:02:03 INFO  no build target: using presentation compiler with only scala-library
 12 17, 2020 1:02:18 åﬂå„ org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
 èÓïÒ: Unsupported notification method: $/setTraceNotification
+2020.12.17 14:44:12 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\improc\ChiselImProc.scala
+2020.12.17 14:44:25 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\improc\Axi4.scala
+2020.12.17 14:44:36 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\improc\Axi4.scala
+2020.12.17 14:44:38 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\improc\AXIStreamDefs.scala
+2020.12.17 14:44:51 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\improc\AXIStreamDefs.scala
+2020.12.17 14:44:54 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\improc\ChiselImProc.scala
+2020.12.17 14:45:03 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\improc\ChiselImProc.scala
+2020.12.17 14:45:05 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\improc\Fifo.scala
+2020.12.17 14:45:14 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\improc\Fifo.scala
+2020.12.17 14:45:17 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\improc\RVCounter.scala
+2020.12.17 14:45:25 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\improc\RVCounter.scala
+2020.12.17 14:45:29 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\improc\Sqrt.scala
+2020.12.17 14:45:36 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\main\scala\improc\Sqrt.scala
+2020.12.17 14:45:51 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\Axi4Main.scala
+2020.12.17 14:45:59 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\Axi4Main.scala
+2020.12.17 14:46:01 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\Axi4StreamMain.scala
+2020.12.17 14:46:06 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\Axi4StreamMain.scala
+2020.12.17 14:46:08 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\Axi4Test.scala
+2020.12.17 14:46:20 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\Axi4Test.scala
+2020.12.17 14:46:23 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\AXIStreamTester.scala
+2020.12.17 14:46:30 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\AXIStreamTester.scala
+2020.12.17 14:46:31 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\FifoMain.scala
+2020.12.17 14:46:39 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\FifoMain.scala
+2020.12.17 14:46:41 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\FifoTest.scala
+2020.12.17 14:46:47 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\FifoTest.scala
+2020.12.17 14:46:51 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\ImProcTester.scala
+2020.12.17 14:47:00 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\RVCounterTester.scala
+2020.12.17 14:47:07 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\RVCounterTester.scala
+2020.12.17 14:47:11 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\ImProcTester.scala
+2020.12.17 14:47:14 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\SqrtUIntTester.scala
+2020.12.17 14:47:20 WARN  no build target for: C:\Users\aonishiken\workspace\chise-muladd\axi4\src\test\scala\improc\SqrtUIntTester.scala
+2020.12.17 14:48:17 INFO  shutting down Metals

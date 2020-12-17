@@ -3,7 +3,7 @@
 // Modified to fit chisel3
 // by Shata
 
-package axi4
+package improc
 
 import chisel3._
 import chisel3.util._
